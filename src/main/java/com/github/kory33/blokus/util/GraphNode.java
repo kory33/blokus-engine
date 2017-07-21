@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -84,18 +85,16 @@ public class GraphNode<D> {
     }
 
     @Override
-    @Contract(pure = true)
-    public int hashCode() {
-        return this.data.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GraphNode<?> graphNode = (GraphNode<?>) o;
+        return Objects.equals(data, graphNode.data) &&
+                Objects.equals(connectedNodes, graphNode.connectedNodes);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof GraphNode)) {
-            return false;
-        }
-        GraphNode<?> node = (GraphNode)obj;
-
-        return this.data.equals(node.getData()) && this.connectedNodes.equals(node.connectedNodes);
+    public int hashCode() {
+        return Objects.hash(data);
     }
 }
