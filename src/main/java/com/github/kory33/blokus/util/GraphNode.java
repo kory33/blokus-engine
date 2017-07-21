@@ -16,7 +16,7 @@ import java.util.Set;
 public class GraphNode<D> {
     @NotNull private D data;
 
-    private final Set<GraphNode<D>> connectedNodes = new HashSet<GraphNode<D>>();
+    private final Set<GraphNode<D>> connectedNodes = new HashSet<>();
 
     public GraphNode(@NotNull D data) {
         this.data = data;
@@ -26,6 +26,10 @@ public class GraphNode<D> {
     @Contract(pure = true)
     public D getData() {
         return this.data;
+    }
+
+    public void setData(@NotNull D data) {
+        this.data = data;
     }
 
     @Contract(pure = true)
