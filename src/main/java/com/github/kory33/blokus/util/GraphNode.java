@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -82,19 +81,5 @@ public class GraphNode<D> {
      */
     public boolean isConnectedWith(@NotNull GraphNode<D> targetNode) {
         return this.connectedNodes.contains(targetNode);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GraphNode<?> graphNode = (GraphNode<?>) o;
-        return Objects.equals(data, graphNode.data) &&
-                Objects.equals(connectedNodes, graphNode.connectedNodes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(data);
     }
 }
