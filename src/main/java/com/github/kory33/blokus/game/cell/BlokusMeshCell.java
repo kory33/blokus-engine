@@ -5,11 +5,12 @@ import com.github.kory33.blokus.util.GraphNode;
 /**
  * This class represents a node in a mesh-representation of a Blokus board.
  */
-public class BlokusMeshCell extends GraphNode<CellState> {
+public class BlokusMeshCell extends GraphNode<Void> {
     /**
      * Create empty mesh node
      */
     public BlokusMeshCell() {
-        super(CellState.NONE);
+        //noinspection ConstantConditions
+        super(null);
     }
 }
