@@ -1,5 +1,7 @@
 package com.github.kory33.blokus.game;
 
+import com.github.kory33.blokus.util.IntegerVector;
+
 /**
  * Constants used in game of Blokus
  */
@@ -16,7 +18,7 @@ public class BlokusConstant {
      * and the coordinate of bottom-right cell is <code>(12, 12)</code>
      * </p>
      */
-    public static final BlokusCoordinate RED_BEGIN_COORDINATE = new BlokusCoordinate(3, 3);
+    public static final IntegerVector RED_BEGIN_COORDINATE = new IntegerVector(3, 3);
 
     /**
      * Positions from which blue player begins it's first placement.
@@ -25,7 +27,7 @@ public class BlokusConstant {
      * and the coordinate of bottom-right cell is <code>(12, 12)</code>
      * </p>
      */
-    public static final BlokusCoordinate BLUE_BEGIN_COORDINATE = new BlokusCoordinate(10, 10);
+    public static final IntegerVector BLUE_BEGIN_COORDINATE = new IntegerVector(10, 10);
 
     /**
      * Maximum size of a placement.
