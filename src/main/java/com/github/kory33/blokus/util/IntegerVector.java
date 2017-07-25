@@ -1,19 +1,31 @@
-package com.github.kory33.blokus.game;
+package com.github.kory33.blokus.util;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 /**
- * A
+ * A class representing a two-dimensional integer vector.
  */
-public class BlokusCoordinate {
+public class IntegerVector {
     @NotNull private final Integer x;
     @NotNull private final Integer y;
 
-    public BlokusCoordinate(@NotNull Integer x, @NotNull Integer y) {
+    public IntegerVector(@NotNull Integer x, @NotNull Integer y) {
         this.x = x;
         this.y = y;
+    }
+
+    public IntegerVector add(IntegerVector vector) {
+        return new IntegerVector(this.getX() + vector.getX(), this.getY() + vector.getY());
+    }
+
+    public IntegerVector negate() {
+        return new IntegerVector(-this.getX(), this.getY());
+    }
+
+    public IntegerVector minus(IntegerVector vector) {
+        return this.add(vector.negate());
     }
 
     @NotNull
@@ -30,7 +42,7 @@ public class BlokusCoordinate {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BlokusCoordinate that = (BlokusCoordinate) o;
+        IntegerVector that = (IntegerVector) o;
         return Objects.equals(x, that.x) &&
                 Objects.equals(y, that.y);
     }
