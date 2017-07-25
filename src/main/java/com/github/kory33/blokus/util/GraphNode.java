@@ -14,11 +14,11 @@ import java.util.Set;
  * @author Kory
  */
 public class GraphNode<D> {
-    @NotNull private D data;
+    private D data;
 
     private final Set<GraphNode<D>> connectedNodes = new HashSet<>();
 
-    public GraphNode(@NotNull D data) {
+    public GraphNode(D data) {
         this.data = data;
     }
 
@@ -34,7 +34,7 @@ public class GraphNode<D> {
 
     @Contract(pure = true)
     public Set<GraphNode<D>> getConnectedNodes() {
-        return this.connectedNodes;
+        return new HashSet<>(this.connectedNodes);
     }
 
     /**
