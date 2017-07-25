@@ -97,11 +97,73 @@ import java.util.Set;
     }
 
     /**
+     * @param found set of placements that are already found before the exploration session begins.
+     * @param visitedNodes nodes that have been visited.
+     * @param foundInThisExploration set of placements that are found in this exploration session.
+     * @return set of placements that can be derived from the given visited nodes.
+     */
+    private Set<BlokusPlacement> exploreFurtherPlacements(Set<BlokusPlacement> found,
+                                                          Set<BlokusMeshNode> visitedNodes,
+                                                          Set<BlokusPlacement> foundInThisExploration) {
+        if (visitedNodes.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
+            Set<BlokusPlacement> constructedPlacements = new HashSet<>();
+            constructedPlacements.add(new BlokusPlacement(visitedNodes));
+            return constructedPlacements;
+        }
+
+        for (BlokusMeshNode visitedNode: visitedNodes) {
+            for (BlokusMeshNode nextExplorationNode: visitedNode.getConnectedNodes()) {
+                if (visitedNodes.contains(nextExplorationNode)) {
+                    continue;
+                }
+                Set<BlokusMeshNode> nextExplorationRoot = new HashSet<>(visitedNodes);
+                nextExplorationRoot.add(nextExplorationNode);
+                BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRoot);
+
+                if (nextExplorationRoot.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
+                    foundInThisExploration.add(constructedPlacement);
+                    continue;
+                }
+
+                if (nextExplorationRoot.size() >= BlokusConstant.MIN_PLACEMENT_SIZE) {
+                    if (found.contains(constructedPlacement) || foundInThisExploration.contains(constructedPlacement)) {
+                        continue;
+                    }
+                    foundInThisExploration.add(constructedPlacement);
+                }
+
+                Set<BlokusPlacement> nextExplorationResult =
+                        exploreFurtherPlacements(found, nextExplorationRoot, foundInThisExploration);
+                foundInThisExploration.addAll(nextExplorationResult);
+            }
+        }
+
+        return foundInThisExploration;
+    }
+
+    /**
      * Obtain a set containing all the next possible placements.
      * @return a set containing all the next possible placements.
      */
-    /*package-private*/ Set<BlokusPlacement> getPossiblePlacement() {
-        // TODO
-        return new HashSet<>();
+    /*package-private*/ Set<BlokusPlacement> getPossiblePlacements() {
+        Set<BlokusPlacement> foundPlacements = new HashSet<>();
+        Set<BlokusMeshNode> unusablePlacementRoots = new HashSet<>();
+
+        this.placementRootCells.forEach(rootCell -> {
+            Set<BlokusMeshNode> visitedNodes = new HashSet<>();
+            visitedNodes.add(rootCell);
+
+            Set<BlokusPlacement> explorationResult = exploreFurtherPlacements(foundPlacements, visitedNodes, new HashSet<>());
+
+            if (explorationResult.size() == 0) {
+                unusablePlacementRoots.add(rootCell);
+            } else {
+                foundPlacements.addAll(explorationResult);
+            }
+        });
+
+        // update root cells
+        unusablePlacementRoots.forEach(this.placementRootCells::remove);
+        return foundPlacements;
     }
 }
