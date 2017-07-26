@@ -4,6 +4,7 @@ import com.github.kory33.blokus.game.cell.BlokusMeshNode;
 import com.github.kory33.blokus.game.cell.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +13,9 @@ import java.util.Set;
     private final BlokusMeshMatrix meshMatrix;
     private final PlayerColor playerColor;
     private final Set<BlokusMeshNode> placementRootCells = new HashSet<>();
+
+    @Nullable
+    private Set<BlokusPlacement> placementSetCache;
 
     /*package-private*/ BlokusBoardMesh(@NotNull PlayerColor playerColor) {
         this.playerColor = playerColor;
@@ -66,6 +70,9 @@ import java.util.Set;
     /*package-private*/ void makeOpponentPlacement(BlokusPlacement placement) {
         // disconnect all surrounding edges
         placement.forEach(BlokusMeshNode::disconnectAllEdges);
+
+        // clear cache
+        this.placementSetCache = null;
     }
 
     /**
@@ -97,6 +104,9 @@ import java.util.Set;
 
         // remove adjacent cells from placement root candidates. (no placement can be made from these cells)
         cellsDirectlyAdjacentToPlacementCell.forEach(placementRootCandidate::remove);
+
+        // clear cache
+        this.placementSetCache = null;
     }
 
     /**
@@ -148,8 +158,11 @@ import java.util.Set;
      * Obtain a set containing all the next possible placements.
      * @return a set containing all the next possible placements.
      */
-    // TODO Cache exploration result and return the cache when the mesh is unchanged.
     /*package-private*/ Set<BlokusPlacement> getPossiblePlacements() {
+        if (this.placementSetCache != null) {
+            return new HashSet<>(this.placementSetCache);
+        }
+
         Set<BlokusPlacement> foundPlacements = new HashSet<>();
         Set<BlokusMeshNode> unusablePlacementRoots = new HashSet<>();
 
@@ -168,6 +181,8 @@ import java.util.Set;
 
         // update root cells
         unusablePlacementRoots.forEach(this.placementRootCells::remove);
+
+        this.placementSetCache = foundPlacements;
         return foundPlacements;
     }
 }
