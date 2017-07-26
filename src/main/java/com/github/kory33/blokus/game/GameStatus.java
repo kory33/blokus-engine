@@ -1,6 +1,7 @@
 package com.github.kory33.blokus.game;
 
 import com.github.kory33.blokus.game.cell.PlayerColor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,5 +25,13 @@ public enum GameStatus {
     @Nullable
     public PlayerColor getNextPlayerColor() {
         return nextPlayerColor;
+    }
+
+    @NotNull
+    public static GameStatus getResumeStatus(PlayerColor nextPlayerColor) {
+        if (nextPlayerColor == PlayerColor.RED) {
+            return RESUME_RED_PLAYER;
+        }
+        return RESUME_BLUE_PLAYER;
     }
 }

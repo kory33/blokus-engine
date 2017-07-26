@@ -1,6 +1,7 @@
 package com.github.kory33.blokus.game;
 
 import com.github.kory33.blokus.game.cell.PlayerColor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -8,11 +9,11 @@ import java.util.Set;
  * A class representing a Blokus game session.
  */
 public class BlokusGame {
-    private final BlokusBoard board;
+    @NotNull private final BlokusBoard board;
     private final BlokusBoardMesh redPlacementMesh;
     private final BlokusBoardMesh bluePlacementMesh;
 
-    private GameStatus currentGameStatus;
+    @NotNull private GameStatus currentGameStatus;
 
     private final IBlokusPlayer redPlayer;
     private final IBlokusPlayer bluePlayer;
@@ -53,17 +54,20 @@ public class BlokusGame {
             playerBoardMesh = this.bluePlacementMesh;
         }
 
-        this.makePlacement(nextPlayer.chooseBestPlacementFrom(playerBoardMesh.getPossiblePlacements(), this.board));
+        Set<BlokusPlacement> possiblePlacements = playerBoardMesh.getPossiblePlacements();
+        BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.board);
+        this.makePlacement(playerPlacement);
     }
 
     private void makePlacement(BlokusPlacement placement) {
-        if (this.currentGameStatus.getNextPlayerColor() != placement.getPlacementColor()) {
+        PlayerColor placementColor = placement.getPlacementColor();
+        if (this.currentGameStatus.getNextPlayerColor() != placementColor) {
             throw new IllegalArgumentException("Illegally-colored placement given!");
         }
 
         BlokusBoardMesh playerBoardMesh;
         BlokusBoardMesh opponentBoardMesh;
-        if (placement.getPlacementColor() == PlayerColor.RED) {
+        if (placementColor == PlayerColor.RED) {
             playerBoardMesh = this.redPlacementMesh;
             opponentBoardMesh = this.bluePlacementMesh;
         } else {
@@ -77,32 +81,24 @@ public class BlokusGame {
         this.board.updateBoard(placement);
 
         // update the game status and placement exploration mesh
-        // TODO generify code and reduce duplicate code
-        if (placement.getPlacementColor() == PlayerColor.RED) {
-            if (this.bluePlacementMesh.getPossiblePlacements().isEmpty()) {
-                if (this.redPlacementMesh.getPossiblePlacements().isEmpty()) {
-                    this.currentGameStatus = GameStatus.GAME_FINISH;
-                }
-                // keep the game status on RESUME_RED_PLAYER and exit.
-                return;
+        if (opponentBoardMesh.getPossiblePlacements().isEmpty()) {
+            if (playerBoardMesh.getPossiblePlacements().isEmpty()) {
+                this.currentGameStatus = GameStatus.GAME_FINISH;
             }
-            this.currentGameStatus = GameStatus.RESUME_BLUE_PLAYER;
-        } else {
-           if (this.redPlacementMesh.getPossiblePlacements().isEmpty()) {
-                if (this.bluePlacementMesh.getPossiblePlacements().isEmpty()) {
-                    this.currentGameStatus = GameStatus.GAME_FINISH;
-                }
-                // keep the game status on RESUME_BLUE_PLAYER and exit.
-                return;
-            }
-            this.currentGameStatus = GameStatus.RESUME_RED_PLAYER;
+            // keep the game status same and exit.
+            return;
         }
+
+        // invert the player color
+        this.currentGameStatus = GameStatus.getResumeStatus(placementColor.getOpponentColor());
     }
 
+    @NotNull
     public BlokusBoard getBoard() {
         return board;
     }
 
+    @NotNull
     public GameStatus getCurrentGameStatus() {
         return currentGameStatus;
     }
