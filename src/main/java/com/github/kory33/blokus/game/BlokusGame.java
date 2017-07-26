@@ -13,7 +13,7 @@ public class BlokusGame {
     private final BlokusBoardMesh redPlacementMesh;
     private final BlokusBoardMesh bluePlacementMesh;
 
-    @NotNull private GameStatus currentGameStatus;
+    @NotNull private BlokusGameStatus currentGameStatus;
 
     private final IBlokusPlayer redPlayer;
     private final IBlokusPlayer bluePlayer;
@@ -25,14 +25,14 @@ public class BlokusGame {
         this.redPlayer = red;
         this.bluePlayer = blue;
 
-        this.currentGameStatus = GameStatus.RESUME_RED_PLAYER;
+        this.currentGameStatus = BlokusGameStatus.RESUME_RED_PLAYER;
         this.redPlayer.assignColor(PlayerColor.RED);
         this.bluePlayer.assignColor(PlayerColor.BLUE);
     }
 
     /**
      * Let next player choose a placement and play the chosen placement.
-     * Upon calling this method, <code>GameStatus</code> member is updated,
+     * Upon calling this method, <code>BlokusGameStatus</code> member is updated,
      * hence a change in return value of {@link #getCurrentGameStatus()}.
      * <p>
      * When the game has been already terminated, this method does not do anything.
@@ -46,7 +46,7 @@ public class BlokusGame {
         IBlokusPlayer nextPlayer;
         Set<BlokusPlacement> nextPossiblePlacement;
         BlokusBoardMesh playerBoardMesh;
-        if (this.currentGameStatus == GameStatus.RESUME_RED_PLAYER) {
+        if (this.currentGameStatus == BlokusGameStatus.RESUME_RED_PLAYER) {
             nextPlayer = this.redPlayer;
             playerBoardMesh = this.redPlacementMesh;
         } else {
@@ -83,14 +83,14 @@ public class BlokusGame {
         // update the game status and placement exploration mesh
         if (opponentBoardMesh.getPossiblePlacements().isEmpty()) {
             if (playerBoardMesh.getPossiblePlacements().isEmpty()) {
-                this.currentGameStatus = GameStatus.GAME_FINISH;
+                this.currentGameStatus = BlokusGameStatus.GAME_FINISH;
             }
             // keep the game status same and exit.
             return;
         }
 
         // invert the player color
-        this.currentGameStatus = GameStatus.getResumeStatus(placementColor.getOpponentColor());
+        this.currentGameStatus = BlokusGameStatus.getResumeStatus(placementColor.getOpponentColor());
     }
 
     @NotNull
@@ -99,7 +99,7 @@ public class BlokusGame {
     }
 
     @NotNull
-    public GameStatus getCurrentGameStatus() {
+    public BlokusGameStatus getCurrentGameStatus() {
         return currentGameStatus;
     }
 }

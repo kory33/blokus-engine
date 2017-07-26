@@ -17,5 +17,5 @@ public interface IBlokusPlayer {
 
     void assignColor(@NotNull PlayerColor color);
 
-    void notifyGameStatus(@NotNull GameStatus status, @NotNull BlokusBoard board);
+    void notifyGameStatus(@NotNull BlokusGameStatus status, @NotNull BlokusBoard board);
 }

@@ -7,14 +7,14 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An enum class representing a status of Blokus game.
  */
-public enum GameStatus {
+public enum BlokusGameStatus {
     RESUME_RED_PLAYER(PlayerColor.RED),
     RESUME_BLUE_PLAYER(PlayerColor.BLUE),
     GAME_FINISH(null);
 
     private final PlayerColor nextPlayerColor;
 
-    GameStatus(@Nullable PlayerColor nextPlayerColor) {
+    BlokusGameStatus(@Nullable PlayerColor nextPlayerColor) {
         this.nextPlayerColor = nextPlayerColor;
     }
 
@@ -28,7 +28,7 @@ public enum GameStatus {
     }
 
     @NotNull
-    public static GameStatus getResumeStatus(PlayerColor nextPlayerColor) {
+    public static BlokusGameStatus getResumeStatus(PlayerColor nextPlayerColor) {
         if (nextPlayerColor == PlayerColor.RED) {
             return RESUME_RED_PLAYER;
         }
