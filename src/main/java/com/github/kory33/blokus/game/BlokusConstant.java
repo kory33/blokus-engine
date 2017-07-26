@@ -2,6 +2,10 @@ package com.github.kory33.blokus.game;
 
 import com.github.kory33.blokus.util.IntegerVector;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Constants used in game of Blokus
  */
@@ -40,9 +44,16 @@ public class BlokusConstant {
     public static final Integer MAX_PLACEMENT_SIZE = 5;
 
     /**
-     * Array containing a maximum possible numbers of corresponding-sized placement in one game.
-     * For example, number in an index of <code>3</code>
+     * Map containing a maximum possible numbers of corresponding-sized placement in one game.
+     * For example, number mapped from <code>3</code>
      * indicates number of times 3-cells placement can be made in a game.
      */
-    public static final Integer[] PLACEMENT_COUNTS = {0, 0, 0, 10, 5, 2};
+    public static final Map<Integer, Integer> PLACEMENT_COUNTS;
+    static {
+        Map<Integer, Integer> placementSizeToCountMap = new HashMap<>();
+        placementSizeToCountMap.put(3, 10);
+        placementSizeToCountMap.put(4, 5);
+        placementSizeToCountMap.put(5, 2);
+        PLACEMENT_COUNTS = Collections.unmodifiableMap(placementSizeToCountMap);
+    }
 }

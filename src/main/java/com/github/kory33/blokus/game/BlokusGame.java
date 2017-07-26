@@ -9,44 +9,44 @@ import java.util.Set;
  * A class representing a Blokus game session.
  */
 public class BlokusGame {
-    @NotNull private final BlokusBoard board;
+    @NotNull private final BlokusGameData gameData;
+    @NotNull private BlokusGamePhases currentGamePhase;
+
     private final BlokusBoardMesh redPlacementMesh;
     private final BlokusBoardMesh bluePlacementMesh;
-
-    @NotNull private BlokusGameStatus currentGameStatus;
 
     private final IBlokusPlayer redPlayer;
     private final IBlokusPlayer bluePlayer;
 
     public BlokusGame(IBlokusPlayer red, IBlokusPlayer blue) {
-        this.board = new BlokusBoard(BlokusConstant.BOARD_SIZE);
+        this.gameData = new BlokusGameData();
+
         this.redPlacementMesh = new BlokusBoardMesh(PlayerColor.RED);
         this.bluePlacementMesh = new BlokusBoardMesh(PlayerColor.BLUE);
         this.redPlayer = red;
         this.bluePlayer = blue;
 
-        this.currentGameStatus = BlokusGameStatus.RESUME_RED_PLAYER;
+        this.currentGamePhase = BlokusGamePhases.RESUME_RED_PLAYER;
         this.redPlayer.assignColor(PlayerColor.RED);
         this.bluePlayer.assignColor(PlayerColor.BLUE);
     }
 
     /**
      * Let next player choose a placement and play the chosen placement.
-     * Upon calling this method, <code>BlokusGameStatus</code> member is updated,
-     * hence a change in return value of {@link #getCurrentGameStatus()}.
+     * Upon calling this method, <code>BlokusGamePhases</code> member is updated,
+     * hence a change in return value of {@link #getCurrentGamePhase()}.
      * <p>
      * When the game has been already terminated, this method does not do anything.
      * </p>
      */
     public void playSinglePlacement() {
-        if (this.currentGameStatus.isGameFinished()) {
+        if (this.currentGamePhase.isGameFinished()) {
             return;
         }
 
         IBlokusPlayer nextPlayer;
-        Set<BlokusPlacement> nextPossiblePlacement;
         BlokusBoardMesh playerBoardMesh;
-        if (this.currentGameStatus == BlokusGameStatus.RESUME_RED_PLAYER) {
+        if (this.currentGamePhase == BlokusGamePhases.RESUME_RED_PLAYER) {
             nextPlayer = this.redPlayer;
             playerBoardMesh = this.redPlacementMesh;
         } else {
@@ -55,13 +55,13 @@ public class BlokusGame {
         }
 
         Set<BlokusPlacement> possiblePlacements = playerBoardMesh.getPossiblePlacements();
-        BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.board);
+        BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.gameData);
         this.makePlacement(playerPlacement);
     }
 
     private void makePlacement(BlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
-        if (this.currentGameStatus.getNextPlayerColor() != placementColor) {
+        if (this.currentGamePhase.getNextPlayerColor() != placementColor) {
             throw new IllegalArgumentException("Illegally-colored placement given!");
         }
 
@@ -78,28 +78,23 @@ public class BlokusGame {
         // update board and mesh status with the placement
         playerBoardMesh.makePlayerPlacement(placement);
         opponentBoardMesh.makeOpponentPlacement(placement);
-        this.board.updateBoard(placement);
+        this.gameData.updateGameData(placement);
 
         // update the game status and placement exploration mesh
         if (opponentBoardMesh.getPossiblePlacements().isEmpty()) {
             if (playerBoardMesh.getPossiblePlacements().isEmpty()) {
-                this.currentGameStatus = BlokusGameStatus.GAME_FINISH;
+                this.currentGamePhase = BlokusGamePhases.GAME_FINISH;
             }
             // keep the game status same and exit.
             return;
         }
 
         // invert the player color
-        this.currentGameStatus = BlokusGameStatus.getResumeStatus(placementColor.getOpponentColor());
+        this.currentGamePhase = BlokusGamePhases.getResumeStatus(placementColor.getOpponentColor());
     }
 
     @NotNull
-    public BlokusBoard getBoard() {
-        return board;
-    }
-
-    @NotNull
-    public BlokusGameStatus getCurrentGameStatus() {
-        return currentGameStatus;
+    public BlokusGamePhases getCurrentGamePhase() {
+        return currentGamePhase;
     }
 }
