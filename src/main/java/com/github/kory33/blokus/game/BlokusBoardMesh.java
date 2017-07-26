@@ -148,6 +148,7 @@ import java.util.Set;
      * Obtain a set containing all the next possible placements.
      * @return a set containing all the next possible placements.
      */
+    // TODO Cache exploration result and return the cache when the mesh is unchanged.
     /*package-private*/ Set<BlokusPlacement> getPossiblePlacements() {
         Set<BlokusPlacement> foundPlacements = new HashSet<>();
         Set<BlokusMeshNode> unusablePlacementRoots = new HashSet<>();

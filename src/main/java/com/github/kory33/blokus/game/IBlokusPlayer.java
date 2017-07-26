@@ -13,5 +13,9 @@ public interface IBlokusPlayer {
     PlayerColor getPlayerColor();
 
     @NotNull
-    BlokusPlacement chooseBestPlacementFrom(Set<BlokusPlacement> placementSet);
+    BlokusPlacement chooseBestPlacementFrom(@NotNull Set<BlokusPlacement> placementSet, @NotNull BlokusBoard currentBoard);
+
+    void assignColor(@NotNull PlayerColor color);
+
+    void notifyGameStatus(@NotNull GameStatus status, @NotNull BlokusBoard board);
 }
