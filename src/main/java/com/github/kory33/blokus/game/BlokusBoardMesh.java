@@ -114,19 +114,18 @@ import java.util.Set;
     }
 
     /**
+     * @param placementHoldings Object representing the player's remaining placement holdings.
      * @param found set of placements that are already found before the exploration session begins.
      * @param visitedNodes nodes that have been visited.
      * @param foundInThisExploration set of placements that are found in this exploration session.
      * @return set of placements that can be derived from the given visited nodes.
      */
-    private Set<BlokusPlacement> exploreFurtherPlacements(Set<BlokusPlacement> found,
+    private Set<BlokusPlacement> exploreFurtherPlacements(PlacementHoldings placementHoldings,
+                                                          Set<BlokusPlacement> found,
                                                           Set<BlokusMeshNode> visitedNodes,
                                                           Set<BlokusPlacement> foundInThisExploration) {
-        if (visitedNodes.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
-            Set<BlokusPlacement> constructedPlacements = new HashSet<>();
-            Set<IntegerVector> visitedCoordinates = SetUtil.map(visitedNodes, this.meshMatrix::getCoordinateOf);
-            constructedPlacements.add(new BlokusPlacement(visitedCoordinates, this.playerColor));
-            return constructedPlacements;
+        if (placementHoldings.getMaximumPlacementSize() == 0) {
+            return new HashSet<>();
         }
 
         for (BlokusMeshNode visitedNode: visitedNodes) {
@@ -140,12 +139,12 @@ import java.util.Set;
                 Set<IntegerVector> nextExplorationRootCoords = SetUtil.map(nextExplorationRoot, this.meshMatrix::getCoordinateOf);
                 BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRootCoords, this.playerColor);
 
-                if (nextExplorationRoot.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
+                if (nextExplorationRoot.size() == placementHoldings.getMaximumPlacementSize()) {
                     foundInThisExploration.add(constructedPlacement);
                     continue;
                 }
 
-                if (nextExplorationRoot.size() >= BlokusConstant.MIN_PLACEMENT_SIZE) {
+                if (placementHoldings.isAvailable(nextExplorationRoot.size())) {
                     if (found.contains(constructedPlacement) || foundInThisExploration.contains(constructedPlacement)) {
                         continue;
                     }
@@ -153,7 +152,7 @@ import java.util.Set;
                 }
 
                 Set<BlokusPlacement> nextExplorationResult =
-                        exploreFurtherPlacements(found, nextExplorationRoot, foundInThisExploration);
+                        exploreFurtherPlacements(placementHoldings, found, nextExplorationRoot, foundInThisExploration);
                 foundInThisExploration.addAll(nextExplorationResult);
             }
         }
@@ -164,11 +163,14 @@ import java.util.Set;
     /**
      * Obtain a set containing all the next possible placements.
      * @return a set containing all the next possible placements.
+     * @param gameData data of the game
      */
-    /*package-private*/ Set<BlokusPlacement> getPossiblePlacements() {
+    /*package-private*/ Set<BlokusPlacement> getPossiblePlacements(BlokusGameData gameData) {
         if (this.placementSetCache != null) {
             return new HashSet<>(this.placementSetCache);
         }
+
+        PlacementHoldings placementHoldings = gameData.getPlacementHoldingsOf(this.playerColor);
 
         Set<BlokusPlacement> foundPlacements = new HashSet<>();
         Set<BlokusMeshNode> unusablePlacementRoots = new HashSet<>();
@@ -177,7 +179,7 @@ import java.util.Set;
             Set<BlokusMeshNode> visitedNodes = new HashSet<>();
             visitedNodes.add(rootCell);
 
-            Set<BlokusPlacement> explorationResult = exploreFurtherPlacements(foundPlacements, visitedNodes, new HashSet<>());
+            Set<BlokusPlacement> explorationResult = exploreFurtherPlacements(placementHoldings, foundPlacements, visitedNodes, new HashSet<>());
 
             if (explorationResult.size() == 0) {
                 unusablePlacementRoots.add(rootCell);

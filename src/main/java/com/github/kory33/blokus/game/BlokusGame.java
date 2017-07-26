@@ -54,7 +54,7 @@ public class BlokusGame {
             playerBoardMesh = this.bluePlacementMesh;
         }
 
-        Set<BlokusPlacement> possiblePlacements = playerBoardMesh.getPossiblePlacements();
+        Set<BlokusPlacement> possiblePlacements = playerBoardMesh.getPossiblePlacements(this.gameData);
         BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.gameData);
         this.makePlacement(playerPlacement);
     }
@@ -81,8 +81,8 @@ public class BlokusGame {
         this.gameData.updateGameData(placement);
 
         // update the game status and placement exploration mesh
-        if (opponentBoardMesh.getPossiblePlacements().isEmpty()) {
-            if (playerBoardMesh.getPossiblePlacements().isEmpty()) {
+        if (opponentBoardMesh.getPossiblePlacements(this.gameData).isEmpty()) {
+            if (playerBoardMesh.getPossiblePlacements(this.gameData).isEmpty()) {
                 this.currentGamePhase = BlokusGamePhases.GAME_FINISH;
             }
             // keep the game status same and exit.

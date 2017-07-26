@@ -3,8 +3,10 @@ package com.github.kory33.blokus.game;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A data class holding the numbers of placements that a player can make with a given size.
@@ -17,13 +19,24 @@ public class PlacementHoldings {
         this.holdings = new HashMap<>(BlokusConstant.PLACEMENT_COUNTS);
     }
 
-    @Contract(pure=true)
-    public boolean isAvailable(Integer placementSize) {
+    @Contract(pure = true)
+    /*package-private*/ boolean isAvailable(Integer placementSize) {
         return this.holdings.containsKey(placementSize);
     }
 
+    @Contract(pure = true)
     @NotNull
-    @Contract(pure=true)
+    /*package-private*/ Integer getMaximumPlacementSize() {
+        Set<Integer> availablePlacementSizes = this.holdings.keySet();
+        if (availablePlacementSizes.isEmpty()) {
+            return 0;
+        }
+
+        return Collections.max(this.holdings.keySet());
+    }
+
+    @NotNull
+    @Contract(pure = true)
     public Map<Integer, Integer> getHoldingsMap() {
         return new HashMap<>(this.holdings);
     }
