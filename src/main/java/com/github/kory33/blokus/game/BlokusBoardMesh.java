@@ -10,9 +10,12 @@ import java.util.Set;
 
 /*package-private*/ class BlokusBoardMesh {
     private final BlokusMeshMatrix meshMatrix;
+    private final PlayerColor playerColor;
     private final Set<BlokusMeshNode> placementRootCells = new HashSet<>();
 
     /*package-private*/ BlokusBoardMesh(@NotNull PlayerColor playerColor) {
+        this.playerColor = playerColor;
+
         final Integer meshSize = BlokusConstant.BOARD_SIZE;
 
         // prepare disconnected grid nodes
@@ -60,7 +63,7 @@ import java.util.Set;
      * Internally, placement cells are merely disconnected from the surrounding cells in the mesh graph.
      * @param placement Placement made by the opponent.
      */
-    /*package-private*/ void makeEnemyOpponent(BlokusPlacement placement) {
+    /*package-private*/ void makeOpponentPlacement(BlokusPlacement placement) {
         // disconnect all surrounding edges
         placement.forEach(BlokusMeshNode::disconnectAllEdges);
     }
@@ -107,7 +110,7 @@ import java.util.Set;
                                                           Set<BlokusPlacement> foundInThisExploration) {
         if (visitedNodes.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
             Set<BlokusPlacement> constructedPlacements = new HashSet<>();
-            constructedPlacements.add(new BlokusPlacement(visitedNodes));
+            constructedPlacements.add(new BlokusPlacement(visitedNodes, this.playerColor));
             return constructedPlacements;
         }
 
@@ -118,7 +121,7 @@ import java.util.Set;
                 }
                 Set<BlokusMeshNode> nextExplorationRoot = new HashSet<>(visitedNodes);
                 nextExplorationRoot.add(nextExplorationNode);
-                BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRoot);
+                BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRoot, this.playerColor);
 
                 if (nextExplorationRoot.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
                     foundInThisExploration.add(constructedPlacement);
