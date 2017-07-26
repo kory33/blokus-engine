@@ -10,12 +10,7 @@ import java.util.Set;
  */
 public interface IBlokusPlayer {
     @NotNull
-    PlayerColor getPlayerColor();
-
-    @NotNull
     BlokusPlacement chooseBestPlacementFrom(@NotNull Set<BlokusPlacement> placementSet, @NotNull BlokusBoard currentBoard);
 
     void assignColor(@NotNull PlayerColor color);
-
-    void notifyGameStatus(@NotNull BlokusGameStatus status, @NotNull BlokusBoard board);
 }
