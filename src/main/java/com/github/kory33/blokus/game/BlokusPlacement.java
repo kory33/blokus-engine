@@ -15,34 +15,21 @@ import java.util.function.Function;
  * This class represents a placement made by one of the players.
  */
 public class BlokusPlacement {
-    private final PlayerColor placementColor;
-
-    private final Set<IntegerVector> placementCellCoordinates;
+    @NotNull private final PlayerColor placementColor;
+    @NotNull private final Set<IntegerVector> placementCellCoordinates;
 
     /*package-private*/ BlokusPlacement(@NotNull Set<IntegerVector> placementSet, @NotNull PlayerColor placementColor) {
         this.placementColor = placementColor;
         this.placementCellCoordinates = placementSet;
     }
 
-    public Set<IntegerVector> getCells() {
+    public Set<IntegerVector> getCellCoordinates() {
         return new HashSet<>(placementCellCoordinates);
     }
 
+    @NotNull
     public PlayerColor getPlacementColor() {
         return placementColor;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BlokusPlacement that = (BlokusPlacement) o;
-        return Objects.equals(placementCellCoordinates, that.placementCellCoordinates);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(placementCellCoordinates);
     }
 
     public void forEach(Consumer<? super IntegerVector> action) {
@@ -61,4 +48,16 @@ public class BlokusPlacement {
         return placementCellCoordinates.contains(o);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlokusPlacement that = (BlokusPlacement) o;
+        return Objects.equals(placementCellCoordinates, that.placementCellCoordinates);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(placementCellCoordinates);
+    }
 }
