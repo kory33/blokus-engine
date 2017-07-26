@@ -8,7 +8,7 @@ import java.util.function.Function;
  * Utility class used for manipulating sets.
  */
 public class SetUtil {
-    public static <T, R> Set<R> transform(Set<T> set, Function<T, R> transformer) {
+    public static <T, R> Set<R> map(Set<T> set, Function<? super T, ? extends R> transformer) {
         Set<R> resultSet = new HashSet<>();
         set.forEach(element -> resultSet.add(transformer.apply(element)));
         return resultSet;

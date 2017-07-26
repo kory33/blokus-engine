@@ -36,8 +36,8 @@ public class BlokusPlacement {
         placementCellCoordinates.forEach(action);
     }
 
-    public <R> Set<R> map(Function<IntegerVector, R> transformer) {
-        return SetUtil.transform(this.placementCellCoordinates, transformer);
+    public <R> Set<R> map(Function<? super IntegerVector, ? extends R> transformer) {
+        return SetUtil.map(this.placementCellCoordinates, transformer);
     }
 
     public int size() {

@@ -124,7 +124,7 @@ import java.util.Set;
                                                           Set<BlokusPlacement> foundInThisExploration) {
         if (visitedNodes.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
             Set<BlokusPlacement> constructedPlacements = new HashSet<>();
-            Set<IntegerVector> visitedCoordinates = SetUtil.transform(visitedNodes, this.meshMatrix::getCoordinateOf);
+            Set<IntegerVector> visitedCoordinates = SetUtil.map(visitedNodes, this.meshMatrix::getCoordinateOf);
             constructedPlacements.add(new BlokusPlacement(visitedCoordinates, this.playerColor));
             return constructedPlacements;
         }
@@ -137,7 +137,7 @@ import java.util.Set;
                 Set<BlokusMeshNode> nextExplorationRoot = new HashSet<>(visitedNodes);
                 nextExplorationRoot.add(nextExplorationNode);
 
-                Set<IntegerVector> nextExplorationRootCoords = SetUtil.transform(nextExplorationRoot, this.meshMatrix::getCoordinateOf);
+                Set<IntegerVector> nextExplorationRootCoords = SetUtil.map(nextExplorationRoot, this.meshMatrix::getCoordinateOf);
                 BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRootCoords, this.playerColor);
 
                 if (nextExplorationRoot.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
