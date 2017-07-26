@@ -1,8 +1,8 @@
 package com.github.kory33.blokus.game;
 
-import com.github.kory33.blokus.game.cell.BlokusMeshNode;
 import com.github.kory33.blokus.game.cell.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;
+import com.github.kory33.blokus.util.SetUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,7 +69,7 @@ import java.util.Set;
      */
     /*package-private*/ void makeOpponentPlacement(BlokusPlacement placement) {
         // disconnect all surrounding edges
-        placement.forEach(BlokusMeshNode::disconnectAllEdges);
+        placement.map(this.meshMatrix::getNodeAt).forEach(BlokusMeshNode::disconnectAllEdges);
 
         // clear cache
         this.placementSetCache = null;
@@ -88,11 +88,15 @@ import java.util.Set;
     /*package-private*/ void makePlayerPlacement(BlokusPlacement placement) {
         // mark every nodes diagonally adjacent to any one nodes in the placement as "placement root" candidate
         Set<BlokusMeshNode> placementRootCandidate = new HashSet<>();
-        placement.forEach(node -> placementRootCandidate.addAll(this.meshMatrix.getCellsDiagonallyAdjacentTo(node)));
+        placement.forEach(coordinate -> {
+            BlokusMeshNode node = this.meshMatrix.getNodeAt(coordinate);
+            placementRootCandidate.addAll(this.meshMatrix.getCellsDiagonallyAdjacentTo(node));
+        });
 
         // disconnect all surrounding edges from the cells directly adjacent to one of the placement cells
         Set<BlokusMeshNode> cellsDirectlyAdjacentToPlacementCell = new HashSet<>();
-        placement.forEach(placementNode -> {
+        placement.forEach(placementCoordinate -> {
+            BlokusMeshNode placementNode = this.meshMatrix.getNodeAt(placementCoordinate);
             Set<BlokusMeshNode> connectedNodes = placementNode.getConnectedNodes();
             connectedNodes.removeIf(placement::contains);
             cellsDirectlyAdjacentToPlacementCell.addAll(connectedNodes);
@@ -120,7 +124,8 @@ import java.util.Set;
                                                           Set<BlokusPlacement> foundInThisExploration) {
         if (visitedNodes.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
             Set<BlokusPlacement> constructedPlacements = new HashSet<>();
-            constructedPlacements.add(new BlokusPlacement(visitedNodes, this.playerColor));
+            Set<IntegerVector> visitedCoordinates = SetUtil.transform(visitedNodes, this.meshMatrix::getCoordinateOf);
+            constructedPlacements.add(new BlokusPlacement(visitedCoordinates, this.playerColor));
             return constructedPlacements;
         }
 
@@ -131,7 +136,9 @@ import java.util.Set;
                 }
                 Set<BlokusMeshNode> nextExplorationRoot = new HashSet<>(visitedNodes);
                 nextExplorationRoot.add(nextExplorationNode);
-                BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRoot, this.playerColor);
+
+                Set<IntegerVector> nextExplorationRootCoords = SetUtil.transform(nextExplorationRoot, this.meshMatrix::getCoordinateOf);
+                BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRootCoords, this.playerColor);
 
                 if (nextExplorationRoot.size() == BlokusConstant.MAX_PLACEMENT_SIZE) {
                     foundInThisExploration.add(constructedPlacement);

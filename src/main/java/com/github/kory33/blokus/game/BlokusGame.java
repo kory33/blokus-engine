@@ -19,7 +19,7 @@ public class BlokusGame {
     private final IBlokusPlayer bluePlayer;
 
     public BlokusGame(IBlokusPlayer red, IBlokusPlayer blue) {
-        this.board = new BlokusBoard();
+        this.board = new BlokusBoard(BlokusConstant.BOARD_SIZE);
         this.redPlacementMesh = new BlokusBoardMesh(PlayerColor.RED);
         this.bluePlacementMesh = new BlokusBoardMesh(PlayerColor.BLUE);
         this.redPlayer = red;

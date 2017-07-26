@@ -1,6 +1,5 @@
 package com.github.kory33.blokus.game;
 
-import com.github.kory33.blokus.game.cell.BlokusMeshNode;
 import com.github.kory33.blokus.util.BijectiveHashMap;
 import com.github.kory33.blokus.util.IntegerVector;
 import org.jetbrains.annotations.NotNull;
@@ -39,9 +38,15 @@ import java.util.stream.Collectors;
         }
     }
 
-    @Nullable
+    @NotNull
     BlokusMeshNode getNodeAt(@NotNull IntegerVector targetCoordinate) {
-        return this.meshCoordinateMap.getValue(targetCoordinate);
+        BlokusMeshNode node = this.meshCoordinateMap.getValue(targetCoordinate);
+
+        if (node == null) {
+            throw new IllegalArgumentException("Given vector indicates a coordinate outside the mesh matrix.");
+        }
+
+        return node;
     }
 
     @Nullable
@@ -50,7 +55,7 @@ import java.util.stream.Collectors;
     }
 
     @Nullable
-    private IntegerVector getCoordinateOf(@NotNull BlokusMeshNode cell) {
+    public IntegerVector getCoordinateOf(@NotNull BlokusMeshNode cell) {
         return this.meshCoordinateMap.getKey(cell);
     }
 

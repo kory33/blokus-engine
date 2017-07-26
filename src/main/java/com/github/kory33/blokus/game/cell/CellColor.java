@@ -1,5 +1,6 @@
 package com.github.kory33.blokus.game.cell;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,6 +14,17 @@ public enum CellColor {
 
     CellColor(@Nullable PlayerColor placedBy) {
         this.placedBy = placedBy;
+    }
+
+    @NotNull
+    public static CellColor fromPlayerColor(@NotNull PlayerColor playerColor) {
+        switch (playerColor) {
+            case BLUE:
+                return BLUE;
+            case RED:
+                return RED;
+        }
+        throw new IllegalArgumentException("Null PlayerColor object given.");
     }
 
     @Nullable

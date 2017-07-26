@@ -1,4 +1,4 @@
-package com.github.kory33.blokus.game.cell;
+package com.github.kory33.blokus.game;
 
 import com.github.kory33.blokus.util.GraphNode;
 import org.jetbrains.annotations.Contract;
