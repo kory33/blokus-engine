@@ -18,9 +18,15 @@ public class BlokusPlacement {
     @NotNull private final PlayerColor placementColor;
     @NotNull private final Set<IntegerVector> placementCellCoordinates;
 
+    /**
+     * HashCode is cached under the assumption that a BlokusPlacement object is immutable.
+     */
+    private int hashCodeCache;
+
     /*package-private*/ BlokusPlacement(@NotNull Set<IntegerVector> placementSet, @NotNull PlayerColor placementColor) {
         this.placementColor = placementColor;
         this.placementCellCoordinates = placementSet;
+        this.hashCodeCache = Objects.hash(placementCellCoordinates);
     }
 
     public Set<IntegerVector> getCellCoordinates() {
@@ -53,12 +59,13 @@ public class BlokusPlacement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BlokusPlacement that = (BlokusPlacement) o;
+        if (this.hashCode() != that.hashCode()) return false;
         return Objects.equals(placementCellCoordinates, that.placementCellCoordinates);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(placementCellCoordinates);
+        return this.hashCodeCache;
     }
 
     @Override

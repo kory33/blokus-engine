@@ -11,9 +11,15 @@ public class IntegerVector {
     @NotNull private final Integer x;
     @NotNull private final Integer y;
 
+    /**
+     * HashCode is cached under the assumption that an IntegerVector object is immutable.
+     */
+    private int hashCodeCache;
+
     public IntegerVector(@NotNull Integer x, @NotNull Integer y) {
         this.x = x;
         this.y = y;
+        this.hashCodeCache = Objects.hash(x, y);
     }
 
     public IntegerVector add(IntegerVector vector) {
@@ -43,13 +49,13 @@ public class IntegerVector {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IntegerVector that = (IntegerVector) o;
-        return Objects.equals(x, that.x) &&
-                Objects.equals(y, that.y);
+        if (this.hashCodeCache != that.hashCodeCache) return false;
+        return Objects.equals(x, that.x) && Objects.equals(y, that.y);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y);
+        return this.hashCodeCache;
     }
 
     @Override
