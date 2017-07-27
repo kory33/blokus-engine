@@ -108,4 +108,12 @@ public class BlokusGame {
     public BlokusGameData getGameData() {
         return gameData.getCopy();
     }
+
+    @Nullable
+    public PlayerColor getWinnerColor() {
+        if (!this.isGameFinished()) {
+            return null;
+        }
+        return this.gameData.getPlacementCounts().getWinningColor();
+    }
 }
