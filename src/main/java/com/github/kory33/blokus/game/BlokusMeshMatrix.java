@@ -38,15 +38,9 @@ import java.util.stream.Collectors;
         }
     }
 
-    @NotNull
+    @Nullable
     BlokusMeshNode getNodeAt(@NotNull IntegerVector targetCoordinate) {
-        BlokusMeshNode node = this.meshCoordinateMap.getValue(targetCoordinate);
-
-        if (node == null) {
-            throw new IllegalArgumentException("Given vector indicates a coordinate outside the mesh matrix.");
-        }
-
-        return node;
+        return this.meshCoordinateMap.getValue(targetCoordinate);
     }
 
     @Nullable

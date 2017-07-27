@@ -113,6 +113,7 @@ import java.util.Set;
 
         // remove adjacent cells from placement root candidates. (no placement can be made from these cells)
         cellsDirectlyAdjacentToPlacementCell.forEach(placementRootCandidate::remove);
+        placementNodes.forEach(placementRootCandidate::remove);
 
         // clear cache
         this.placementSetCache = null;
