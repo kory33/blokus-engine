@@ -28,6 +28,10 @@ public class BlokusBoard {
         }
     }
 
+    private BlokusBoard(BlokusBoard board) {
+        this.boardMatrix = new HashMap<>(board.boardMatrix);
+    }
+
     /*package-private*/ void updateBoard(BlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
         placement.forEach(placementCoordinate -> {
@@ -44,5 +48,9 @@ public class BlokusBoard {
         }
 
         return cellColor;
+    }
+
+    public BlokusBoard getCopy() {
+        return new BlokusBoard(this);
     }
 }

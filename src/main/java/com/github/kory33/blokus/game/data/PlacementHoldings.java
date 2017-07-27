@@ -21,6 +21,10 @@ public class PlacementHoldings {
         this.holdings = new HashMap<>(BlokusConstant.PLACEMENT_COUNTS);
     }
 
+    private PlacementHoldings(PlacementHoldings placementHoldings) {
+        this.holdings = placementHoldings.getHoldingsMap();
+    }
+
     @Contract(pure = true)
     public boolean isAvailable(Integer placementSize) {
         return this.holdings.containsKey(placementSize);
@@ -55,5 +59,9 @@ public class PlacementHoldings {
             return;
         }
         this.holdings.put(placementSize, placementHoldings);
+    }
+
+    public PlacementHoldings getCopy() {
+        return new PlacementHoldings(this);
     }
 }

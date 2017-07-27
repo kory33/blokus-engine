@@ -9,18 +9,26 @@ import java.util.Map;
 /**
  * Class representing total size of placements made by red/blue players.
  */
-public class PlacementCount {
+public class PlacementCounts {
     private final Map<PlayerColor, Integer> placementCounts;
 
-    public PlacementCount() {
+    public PlacementCounts() {
         this.placementCounts = new HashMap<>();
         this.placementCounts.put(PlayerColor.RED, 0);
         this.placementCounts.put(PlayerColor.BLUE, 0);
+    }
+
+    private PlacementCounts(PlacementCounts placementCounts) {
+        this.placementCounts = new HashMap<>(placementCounts.placementCounts);
     }
 
     public void addPlacementCount(BlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
         int currentPlacementCount = this.placementCounts.get(placementColor);
         this.placementCounts.put(placementColor, currentPlacementCount + placement.size());
+    }
+
+    public PlacementCounts getCopy() {
+        return new PlacementCounts(this);
     }
 }
