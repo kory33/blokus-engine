@@ -1,6 +1,7 @@
 package com.github.kory33.blokus.game;
 
 import com.github.kory33.blokus.game.cell.PlayerColor;
+import com.github.kory33.blokus.game.data.BlokusGameData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +57,7 @@ public class BlokusGame {
         }
 
         Set<BlokusPlacement> possiblePlacements = playerBoardMesh.getPossiblePlacements(this.gameData);
-        BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.gameData);
+        BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.getGameData());
         this.makePlacement(playerPlacement);
     }
 
@@ -105,6 +106,6 @@ public class BlokusGame {
 
     @NotNull
     public BlokusGameData getGameData() {
-        return gameData;
+        return gameData.getCopy();
     }
 }

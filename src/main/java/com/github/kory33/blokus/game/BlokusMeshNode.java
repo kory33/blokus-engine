@@ -27,16 +27,6 @@ import java.util.Set;
         this.graphNode = graphNode;
     }
 
-    @NotNull
-    @Contract(pure = true)
-    /*package-private*/ Void getData() {
-        return graphNode.getData();
-    }
-
-    /*package-private*/ void setData(@NotNull Void data) {
-        graphNode.setData(data);
-    }
-
     @Contract(pure = true)
     /*package-private*/ Set<BlokusMeshNode> getConnectedNodes() {
         Set<BlokusMeshNode> resultSet = new HashSet<>();
@@ -54,10 +44,6 @@ import java.util.Set;
 
     /*package-private*/ void disconnectAllEdges() {
         this.getConnectedNodes().forEach(this::removeEdgeTo);
-    }
-
-    /*package-private*/ boolean isConnectedWith(@NotNull BlokusMeshNode targetNode) {
-        return graphNode.isConnectedWith(targetNode.graphNode);
     }
 
     @Override

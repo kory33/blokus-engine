@@ -1,6 +1,6 @@
 package com.github.kory33.blokus.agent;
 
-import com.github.kory33.blokus.game.BlokusGameData;
+import com.github.kory33.blokus.game.data.BlokusGameData;
 import com.github.kory33.blokus.game.BlokusPlacement;
 import com.github.kory33.blokus.game.IBlokusPlayer;
 import com.github.kory33.blokus.game.cell.PlayerColor;

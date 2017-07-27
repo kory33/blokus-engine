@@ -1,5 +1,6 @@
-package com.github.kory33.blokus.game;
+package com.github.kory33.blokus.game.data;
 
+import com.github.kory33.blokus.game.BlokusPlacement;
 import com.github.kory33.blokus.game.cell.CellColor;
 import com.github.kory33.blokus.game.cell.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;

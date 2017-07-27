@@ -1,5 +1,7 @@
-package com.github.kory33.blokus.game;
+package com.github.kory33.blokus.game.data;
 
+import com.github.kory33.blokus.game.BlokusConstant;
+import com.github.kory33.blokus.game.BlokusPlacement;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,13 +22,13 @@ public class PlacementHoldings {
     }
 
     @Contract(pure = true)
-    /*package-private*/ boolean isAvailable(Integer placementSize) {
+    public boolean isAvailable(Integer placementSize) {
         return this.holdings.containsKey(placementSize);
     }
 
     @Contract(pure = true)
     @NotNull
-    /*package-private*/ Integer getMaximumPlacementSize() {
+    public Integer getMaximumPlacementSize() {
         Set<Integer> availablePlacementSizes = this.holdings.keySet();
         if (availablePlacementSizes.isEmpty()) {
             return 0;
