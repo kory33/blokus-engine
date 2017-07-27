@@ -67,7 +67,7 @@ public class GraphNode<D> {
         }
 
         this.removeDirectedEdgeTo(targetNode);
-        targetNode.removeDirectedEdgeTo(targetNode);
+        targetNode.removeDirectedEdgeTo(this);
     }
 
     /**

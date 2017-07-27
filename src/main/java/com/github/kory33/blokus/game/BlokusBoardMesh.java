@@ -107,13 +107,14 @@ import java.util.Set;
             cellsDirectlyAdjacentToPlacementCell.addAll(connectedNodes);
         });
         cellsDirectlyAdjacentToPlacementCell.forEach(BlokusMeshNode::disconnectAllEdges);
+        placementNodes.forEach(BlokusMeshNode::disconnectAllEdges);
 
         // update placement root cells
         this.placementRootCells.addAll(placementRootCandidate);
 
         // remove adjacent cells from placement root candidates. (no placement can be made from these cells)
-        cellsDirectlyAdjacentToPlacementCell.forEach(placementRootCandidate::remove);
-        placementNodes.forEach(placementRootCandidate::remove);
+        cellsDirectlyAdjacentToPlacementCell.forEach(placementRootCells::remove);
+        placementNodes.forEach(placementRootCells::remove);
 
         // clear cache
         this.placementSetCache = null;
@@ -182,6 +183,11 @@ import java.util.Set;
         Set<BlokusMeshNode> unusablePlacementRoots = new HashSet<>();
 
         this.placementRootCells.forEach(rootCell -> {
+            if (rootCell.getConnectedNodes().size() == 0) {
+                unusablePlacementRoots.add(rootCell);
+                return;
+            }
+
             Set<BlokusMeshNode> visitedNodes = new HashSet<>();
             visitedNodes.add(rootCell);
 
@@ -199,5 +205,51 @@ import java.util.Set;
 
         this.placementSetCache = foundPlacements;
         return foundPlacements;
+    }
+
+    /**
+     * Convert the mesh into its string representation.
+     * In the string representation, <code>-</code>, <code>|</code>, <code>O</code>, <code>*</code> stands for
+     * horizontal edge, vertical edge, normal node and placement root cell respectively.
+     */
+    @Override
+    public String toString() {
+        StringBuilder resultString = new StringBuilder();
+
+        for (int row = 1; row <= BlokusConstant.BOARD_SIZE; row++) {
+            StringBuilder edgeRowStringBuilder = new StringBuilder();
+            for (int column = 1; column <= BlokusConstant.BOARD_SIZE; column++) {
+                BlokusMeshNode targetCell = this.meshMatrix.getNodeAt(column, row);
+                assert targetCell != null;
+
+                if (this.placementRootCells.contains(targetCell)) {
+                    resultString.append("*");
+                } else {
+                    resultString.append("O");
+                }
+                if (column != BlokusConstant.BOARD_SIZE) {
+                    BlokusMeshNode rightMeshCell = this.meshMatrix.getNodeAt(column + 1, row);
+                    assert rightMeshCell != null;
+
+                    if (targetCell.getConnectedNodes().contains(rightMeshCell)) {
+                        resultString.append(" - ");
+                    } else {
+                        resultString.append("   ");
+                    }
+                }
+
+                if (row != BlokusConstant.BOARD_SIZE) {
+                    BlokusMeshNode bottomCell = this.meshMatrix.getNodeAt(column, row + 1);
+                    assert bottomCell != null;
+                    if (targetCell.getConnectedNodes().contains(bottomCell)) {
+                        edgeRowStringBuilder.append("|   ");
+                    } else {
+                        edgeRowStringBuilder.append("    ");
+                    }
+                }
+            }
+            resultString.append("\n").append(edgeRowStringBuilder.toString()).append("\n");
+        }
+        return resultString.toString();
     }
 }
