@@ -32,19 +32,23 @@ public class BlokusGameData {
         placementCounts = data.getPlacementCounts();
     }
 
+    private PlacementHoldings getInstanceOfPlacementHoldingsOf(@NotNull PlayerColor playerColor) {
+        if (playerColor == PlayerColor.RED) {
+            return this.redPlacementHoldings;
+        }
+        return this.bluePlacementHoldings;
+    }
+
     public void updateGameData(BlokusPlacement placement) {
         this.board.updateBoard(placement);
-        this.getPlacementHoldingsOf(placement.getPlacementColor()).makePlacement(placement);
+        this.getInstanceOfPlacementHoldingsOf(placement.getPlacementColor()).makePlacement(placement);
         this.placementHistory.add(placement);
         this.placementCounts.addPlacementCount(placement);
     }
 
     @Contract(pure = true)
     public PlacementHoldings getPlacementHoldingsOf(@NotNull PlayerColor playerColor) {
-        if (playerColor == PlayerColor.RED) {
-            return this.redPlacementHoldings.getCopy();
-        }
-        return this.bluePlacementHoldings.getCopy();
+        return this.getInstanceOfPlacementHoldingsOf(playerColor).getCopy();
     }
 
     @NotNull
