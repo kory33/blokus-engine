@@ -1,5 +1,6 @@
 package com.github.kory33.blokus.game.data;
 
+import com.github.kory33.blokus.game.BlokusConstant;
 import com.github.kory33.blokus.game.BlokusPlacement;
 import com.github.kory33.blokus.game.cell.PlayerColor;
 
@@ -30,5 +31,18 @@ public class PlacementCounts {
 
     public PlacementCounts getCopy() {
         return new PlacementCounts(this);
+    }
+
+    public PlayerColor getWinningColor() {
+        Integer redPlacementCounts = this.placementCounts.get(PlayerColor.RED);
+        Integer bluePlacementCounts = this.placementCounts.get(PlayerColor.BLUE);
+
+        if (redPlacementCounts > bluePlacementCounts) {
+            return PlayerColor.RED;
+        } else if (bluePlacementCounts > redPlacementCounts) {
+            return PlayerColor.BLUE;
+        }
+
+        return BlokusConstant.FIRST_PLAYER.getOpponentColor();
     }
 }
