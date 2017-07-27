@@ -44,7 +44,7 @@ public class BlokusPlacement {
         return placementCellCoordinates.size();
     }
 
-    public boolean contains(BlokusMeshNode o) {
+    public boolean contains(IntegerVector o) {
         return placementCellCoordinates.contains(o);
     }
 

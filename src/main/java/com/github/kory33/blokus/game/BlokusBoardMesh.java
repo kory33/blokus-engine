@@ -68,8 +68,11 @@ import java.util.Set;
      * @param placement Placement made by the opponent.
      */
     /*package-private*/ void makeOpponentPlacement(BlokusPlacement placement) {
-        // disconnect all surrounding edges
-        placement.map(this.meshMatrix::getNodeAt).forEach(BlokusMeshNode::disconnectAllEdges);
+        // disconnect from all surrounding edges
+        placement.map(this.meshMatrix::getNodeAt).forEach(node -> {
+            node.disconnectAllEdges();
+            this.placementRootCells.remove(node);
+        });
 
         // clear cache
         this.placementSetCache = null;
@@ -86,19 +89,19 @@ import java.util.Set;
      * @param placement Placement made by the player.
      */
     /*package-private*/ void makePlayerPlacement(BlokusPlacement placement) {
+        Set<BlokusMeshNode> placementNodes = placement.map(this.meshMatrix::getNodeAt);
+
         // mark every nodes diagonally adjacent to any one nodes in the placement as "placement root" candidate
         Set<BlokusMeshNode> placementRootCandidate = new HashSet<>();
-        placement.forEach(coordinate -> {
-            BlokusMeshNode node = this.meshMatrix.getNodeAt(coordinate);
+        placementNodes.forEach(node -> {
             placementRootCandidate.addAll(this.meshMatrix.getCellsDiagonallyAdjacentTo(node));
         });
 
         // disconnect all surrounding edges from the cells directly adjacent to one of the placement cells
         Set<BlokusMeshNode> cellsDirectlyAdjacentToPlacementCell = new HashSet<>();
-        placement.forEach(placementCoordinate -> {
-            BlokusMeshNode placementNode = this.meshMatrix.getNodeAt(placementCoordinate);
+        placementNodes.forEach(placementNode -> {
             Set<BlokusMeshNode> connectedNodes = placementNode.getConnectedNodes();
-            connectedNodes.removeIf(placement::contains);
+            connectedNodes.removeIf(placementNodes::contains);
             cellsDirectlyAdjacentToPlacementCell.addAll(connectedNodes);
         });
         cellsDirectlyAdjacentToPlacementCell.forEach(BlokusMeshNode::disconnectAllEdges);
