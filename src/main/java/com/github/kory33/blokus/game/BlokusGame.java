@@ -2,6 +2,7 @@ package com.github.kory33.blokus.game;
 
 import com.github.kory33.blokus.game.cell.PlayerColor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class BlokusGame {
         this.redPlayer = red;
         this.bluePlayer = blue;
 
-        this.currentGamePhase = BlokusGamePhases.RESUME_RED_PLAYER;
+        this.currentGamePhase = BlokusGamePhases.getResumeStatus(BlokusConstant.FIRST_PLAYER);
         this.redPlayer.assignColor(PlayerColor.RED);
         this.bluePlayer.assignColor(PlayerColor.BLUE);
     }
@@ -34,7 +35,7 @@ public class BlokusGame {
     /**
      * Let next player choose a placement and play the chosen placement.
      * Upon calling this method, <code>BlokusGamePhases</code> member is updated,
-     * hence a change in return value of {@link #getCurrentGamePhase()}.
+     * hence a change in return value of {@link #getNextPlayerColor()}.
      * <p>
      * When the game has been already terminated, this method does not do anything.
      * </p>
@@ -93,9 +94,13 @@ public class BlokusGame {
         this.currentGamePhase = BlokusGamePhases.getResumeStatus(placementColor.getOpponentColor());
     }
 
-    @NotNull
-    public BlokusGamePhases getCurrentGamePhase() {
-        return currentGamePhase;
+    @Nullable
+    public PlayerColor getNextPlayerColor() {
+        return currentGamePhase.getNextPlayerColor();
+    }
+
+    public boolean isGameFinished() {
+        return currentGamePhase.isGameFinished();
     }
 
     @NotNull

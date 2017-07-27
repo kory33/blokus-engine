@@ -1,5 +1,6 @@
 package com.github.kory33.blokus.game;
 
+import com.github.kory33.blokus.game.cell.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;
 
 import java.util.Collections;
@@ -34,14 +35,9 @@ public class BlokusConstant {
     public static final IntegerVector BLUE_BEGIN_COORDINATE = new IntegerVector(10, 10);
 
     /**
-     * Maximum size of a placement.
+     * Color of the player who plays a placement at the beginning of a game.
      */
-    public static final Integer MIN_PLACEMENT_SIZE = 3;
-
-    /**
-     * Minimum size of a placement.
-     */
-    public static final Integer MAX_PLACEMENT_SIZE = 5;
+    public static final PlayerColor FIRST_PLAYER = PlayerColor.RED;
 
     /**
      * Map containing a maximum possible numbers of corresponding-sized placement in one game.
