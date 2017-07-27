@@ -60,4 +60,12 @@ public class BlokusPlacement {
     public int hashCode() {
         return Objects.hash(placementCellCoordinates);
     }
+
+    @Override
+    public String toString() {
+        return "BlokusPlacement{" +
+                "placementColor=" + placementColor +
+                ", placementCellCoordinates=" + placementCellCoordinates +
+                '}';
+    }
 }
