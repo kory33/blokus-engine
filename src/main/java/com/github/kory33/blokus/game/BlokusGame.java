@@ -97,4 +97,9 @@ public class BlokusGame {
     public BlokusGamePhases getCurrentGamePhase() {
         return currentGamePhase;
     }
+
+    @NotNull
+    public BlokusGameData getGameData() {
+        return gameData;
+    }
 }
