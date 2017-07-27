@@ -1,10 +1,10 @@
-package com.github.kory33.blokus.game.cell;
+package com.github.kory33.blokus.game.color;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Enum representing colors that are assignable to a cell.
+ * Enum representing colors that are assignable to a color.
  */
 public enum CellColor {
     NONE(null), RED(PlayerColor.RED), BLUE(PlayerColor.BLUE);

@@ -1,8 +1,8 @@
 package com.github.kory33.blokus.game.data;
 
 import com.github.kory33.blokus.game.BlokusPlacement;
-import com.github.kory33.blokus.game.cell.CellColor;
-import com.github.kory33.blokus.game.cell.PlayerColor;
+import com.github.kory33.blokus.game.color.CellColor;
+import com.github.kory33.blokus.game.color.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * A class representing a board in a Blokus game.
  * <p>
- * This class mainly acts as a data class holding the cell colors at the given integer coordinate in a game board.
+ * This class mainly acts as a data class holding the color colors at the given integer coordinate in a game board.
  * </p>
  */
 public class BlokusBoard {

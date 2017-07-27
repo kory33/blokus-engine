@@ -1,6 +1,6 @@
 package com.github.kory33.blokus.game;
 
-import com.github.kory33.blokus.game.cell.PlayerColor;
+import com.github.kory33.blokus.game.color.PlayerColor;
 import com.github.kory33.blokus.game.data.BlokusGameData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

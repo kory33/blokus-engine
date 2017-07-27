@@ -1,6 +1,6 @@
 package com.github.kory33.blokus.game;
 
-import com.github.kory33.blokus.game.cell.PlayerColor;
+import com.github.kory33.blokus.game.color.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;
 
 import java.util.Collections;
@@ -19,8 +19,8 @@ public class BlokusConstant {
     /**
      * Positions from which red player begins it's first placement.
      * <p>
-     * This coordinates is defined under the assumptions that the coordinate of top-left cell is <code>(1, 1)</code>
-     * and the coordinate of bottom-right cell is <code>(12, 12)</code>
+     * This coordinates is defined under the assumptions that the coordinate of top-left color is <code>(1, 1)</code>
+     * and the coordinate of bottom-right color is <code>(12, 12)</code>
      * </p>
      */
     public static final IntegerVector RED_BEGIN_COORDINATE = new IntegerVector(3, 3);
@@ -28,8 +28,8 @@ public class BlokusConstant {
     /**
      * Positions from which blue player begins it's first placement.
      * <p>
-     * This coordinates is defined under the assumptions that the coordinate of top-left cell is <code>(1, 1)</code>
-     * and the coordinate of bottom-right cell is <code>(12, 12)</code>
+     * This coordinates is defined under the assumptions that the coordinate of top-left color is <code>(1, 1)</code>
+     * and the coordinate of bottom-right color is <code>(12, 12)</code>
      * </p>
      */
     public static final IntegerVector BLUE_BEGIN_COORDINATE = new IntegerVector(10, 10);

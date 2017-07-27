@@ -1,6 +1,6 @@
 package com.github.kory33.blokus.game;
 
-import com.github.kory33.blokus.game.cell.PlayerColor;
+import com.github.kory33.blokus.game.color.PlayerColor;
 import com.github.kory33.blokus.game.data.BlokusGameData;
 import com.github.kory33.blokus.game.data.PlacementHoldings;
 import com.github.kory33.blokus.util.IntegerVector;
@@ -33,7 +33,7 @@ import java.util.Set;
                 BlokusMeshNode targetCell = this.meshMatrix.getNodeAt(column, row);
                 assert targetCell != null;
 
-                // add undirected arrow toward the cell on the right
+                // add undirected arrow toward the color on the right
                 if (column != BlokusConstant.BOARD_SIZE) {
                     BlokusMeshNode rightMeshCell = this.meshMatrix.getNodeAt(column + 1, row);
 
@@ -41,7 +41,7 @@ import java.util.Set;
                     targetCell.addEdgeTo(rightMeshCell);
                 }
 
-                // add undirected arrow toward the cell to the bottom
+                // add undirected arrow toward the color to the bottom
                 if (row != BlokusConstant.BOARD_SIZE) {
                     BlokusMeshNode bottomCell = this.meshMatrix.getNodeAt(column, row + 1);
 

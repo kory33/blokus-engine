@@ -2,7 +2,7 @@ package com.github.kory33.blokus.game.data;
 
 import com.github.kory33.blokus.game.BlokusConstant;
 import com.github.kory33.blokus.game.BlokusPlacement;
-import com.github.kory33.blokus.game.cell.PlayerColor;
+import com.github.kory33.blokus.game.color.PlayerColor;
 
 import java.util.HashMap;
 import java.util.Map;
