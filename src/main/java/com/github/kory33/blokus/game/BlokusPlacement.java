@@ -59,7 +59,6 @@ public class BlokusPlacement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BlokusPlacement that = (BlokusPlacement) o;
-        if (this.hashCode() != that.hashCode()) return false;
         return Objects.equals(placementCellCoordinates, that.placementCellCoordinates);
     }
 

@@ -49,7 +49,6 @@ public class IntegerVector {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IntegerVector that = (IntegerVector) o;
-        if (this.hashCodeCache != that.hashCodeCache) return false;
         return Objects.equals(x, that.x) && Objects.equals(y, that.y);
     }
 
