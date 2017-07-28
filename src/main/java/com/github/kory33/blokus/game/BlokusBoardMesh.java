@@ -6,18 +6,22 @@ import com.github.kory33.blokus.game.data.PlacementHoldings;
 import com.github.kory33.blokus.util.IntegerVector;
 import com.github.kory33.blokus.util.SetUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 /*package-private*/ class BlokusBoardMesh {
     private final BlokusMeshMatrix meshMatrix;
     private final PlayerColor playerColor;
-    private final Set<BlokusMeshNode> placementRootCells = new HashSet<>();
 
-    @Nullable
-    private Set<BlokusPlacement> placementSetCache;
+    // for optimization:
+    private boolean hasExploredBefore = false;
+
+    private Set<BlokusMeshNode> placementRootCells = new HashSet<>();
+    private Set<BlokusMeshNode> unavailableNodes = new HashSet<>();
+    private HashMap<IntegerVector, HashSet<BlokusPlacement>> placementsContainingCoordinateMap = new HashMap<>();
+    private Set<BlokusPlacement> placementSetCache = new HashSet<>();
 
     /*package-private*/ BlokusBoardMesh(@NotNull PlayerColor playerColor) {
         this.playerColor = playerColor;
@@ -30,7 +34,8 @@ import java.util.Set;
         // add connections
         for (int column = 1; column <= BlokusConstant.BOARD_SIZE; column++) {
             for (int row = 1; row <= BlokusConstant.BOARD_SIZE; row++) {
-                BlokusMeshNode targetCell = this.meshMatrix.getNodeAt(column, row);
+                IntegerVector targetVector = new IntegerVector(column, row);
+                BlokusMeshNode targetCell = this.meshMatrix.getNodeAt(targetVector);
                 assert targetCell != null;
 
                 // add undirected arrow toward the color on the right
@@ -48,6 +53,8 @@ import java.util.Set;
                     assert bottomCell != null;
                     targetCell.addEdgeTo(bottomCell);
                 }
+
+                this.placementsContainingCoordinateMap.put(targetVector, new HashSet<>());
             }
         }
 
@@ -63,6 +70,24 @@ import java.util.Set;
         placementRootCells.add(meshMatrix.getNodeAt(initialPlacementRoot));
     }
 
+    private void markPlacementAsUnavailable(BlokusPlacement placement) {
+        this.placementSetCache.remove(placement);
+    }
+
+    private void markCellAsUnavailable(BlokusMeshNode cellNode) {
+        this.unavailableNodes.add(cellNode);
+
+        cellNode.disconnectAllEdges();
+        this.placementRootCells.remove(cellNode);
+
+        IntegerVector cellCoordinate = this.meshMatrix.getCoordinateOf(cellNode);
+
+        this.placementsContainingCoordinateMap
+                .get(cellCoordinate)
+                .forEach(this::markPlacementAsUnavailable);
+        this.placementsContainingCoordinateMap.put(cellCoordinate, new HashSet<>());
+    }
+
     /**
      * This method computes the changes on the mesh when a given placement is made by the opponent.
      *
@@ -71,13 +96,7 @@ import java.util.Set;
      */
     /*package-private*/ void makeOpponentPlacement(BlokusPlacement placement) {
         // disconnect from all surrounding edges
-        placement.map(this.meshMatrix::getNodeAt).forEach(node -> {
-            node.disconnectAllEdges();
-            this.placementRootCells.remove(node);
-        });
-
-        // clear cache
-        this.placementSetCache = null;
+        placement.map(this.meshMatrix::getNodeAt).forEach(this::markCellAsUnavailable);
     }
 
     /**
@@ -98,41 +117,37 @@ import java.util.Set;
         placementNodes.forEach(node -> {
             placementRootCandidate.addAll(this.meshMatrix.getCellsDiagonallyAdjacentTo(node));
         });
+        placementRootCandidate.removeIf(this.unavailableNodes::contains);
 
         // disconnect all surrounding edges from the cells directly adjacent to one of the placement cells
         Set<BlokusMeshNode> cellsDirectlyAdjacentToPlacementCell = new HashSet<>();
         placementNodes.forEach(placementNode -> {
-            Set<BlokusMeshNode> connectedNodes = placementNode.getConnectedNodes();
-            connectedNodes.removeIf(placementNodes::contains);
-            cellsDirectlyAdjacentToPlacementCell.addAll(connectedNodes);
+            cellsDirectlyAdjacentToPlacementCell.addAll(placementNode.getConnectedNodes());
         });
-        cellsDirectlyAdjacentToPlacementCell.forEach(BlokusMeshNode::disconnectAllEdges);
-        placementNodes.forEach(BlokusMeshNode::disconnectAllEdges);
 
         // update placement root cells
         this.placementRootCells.addAll(placementRootCandidate);
 
-        // remove adjacent cells from placement root candidates. (no placement can be made from these cells)
-        cellsDirectlyAdjacentToPlacementCell.forEach(placementRootCells::remove);
-        placementNodes.forEach(placementRootCells::remove);
+        cellsDirectlyAdjacentToPlacementCell.forEach(this::markCellAsUnavailable);
+        placementNodes.forEach(this::markCellAsUnavailable);
+    }
 
-        // clear cache
-        this.placementSetCache = null;
+    private void registerFoundPlacement(BlokusPlacement placement) {
+        this.placementSetCache.add(placement);
+
+        placement.getCellCoordinates().forEach(cellVec -> {
+            this.placementsContainingCoordinateMap.get(cellVec).add(placement);
+        });
     }
 
     /**
      * @param placementHoldings Object representing the player's remaining placement holdings.
-     * @param found set of placements that are already found before the exploration session begins.
      * @param visitedNodes nodes that have been visited.
-     * @param foundInThisExploration set of placements that are found in this exploration session.
-     * @return set of placements that can be derived from the given visited nodes.
      */
-    private Set<BlokusPlacement> exploreFurtherPlacements(PlacementHoldings placementHoldings,
-                                                          Set<BlokusPlacement> found,
-                                                          Set<BlokusMeshNode> visitedNodes,
-                                                          Set<BlokusPlacement> foundInThisExploration) {
+    private void exploreFurtherPlacements(PlacementHoldings placementHoldings,
+                                          Set<BlokusMeshNode> visitedNodes) {
         if (placementHoldings.getMaximumPlacementSize() == 0) {
-            return new HashSet<>();
+            return;
         }
 
         for (BlokusMeshNode visitedNode: visitedNodes) {
@@ -147,24 +162,20 @@ import java.util.Set;
                 BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRootCoords, this.playerColor);
 
                 if (nextExplorationRoot.size() == placementHoldings.getMaximumPlacementSize()) {
-                    foundInThisExploration.add(constructedPlacement);
+                    this.registerFoundPlacement(constructedPlacement);
                     continue;
                 }
 
                 if (placementHoldings.isAvailable(nextExplorationRoot.size())) {
-                    if (found.contains(constructedPlacement) || foundInThisExploration.contains(constructedPlacement)) {
+                    if (this.placementSetCache.contains(constructedPlacement)) {
                         continue;
                     }
-                    foundInThisExploration.add(constructedPlacement);
+                    this.registerFoundPlacement(constructedPlacement);
                 }
 
-                Set<BlokusPlacement> nextExplorationResult =
-                        exploreFurtherPlacements(placementHoldings, found, nextExplorationRoot, foundInThisExploration);
-                foundInThisExploration.addAll(nextExplorationResult);
+                exploreFurtherPlacements(placementHoldings, nextExplorationRoot);
             }
         }
-
-        return foundInThisExploration;
     }
 
     /**
@@ -173,38 +184,28 @@ import java.util.Set;
      * @param gameData data of the game
      */
     /*package-private*/ Set<BlokusPlacement> getPossiblePlacements(BlokusGameData gameData) {
-        if (this.placementSetCache != null) {
-            return new HashSet<>(this.placementSetCache);
-        }
-
         PlacementHoldings placementHoldings = gameData.getPlacementHoldingsOf(this.playerColor);
 
-        Set<BlokusPlacement> foundPlacements = new HashSet<>();
-        Set<BlokusMeshNode> unusablePlacementRoots = new HashSet<>();
+        if (hasExploredBefore) {
+            // remove placements whose sizes are no longer place-able.
+            this.placementSetCache.removeIf(placement -> !placementHoldings.isAvailable(placement.size()));
+        } else {
+            hasExploredBefore = true;
+        }
+
+        if (this.placementRootCells.isEmpty()) {
+            return this.placementSetCache;
+        }
 
         this.placementRootCells.forEach(rootCell -> {
-            if (rootCell.getConnectedNodes().size() == 0) {
-                unusablePlacementRoots.add(rootCell);
-                return;
-            }
-
             Set<BlokusMeshNode> visitedNodes = new HashSet<>();
             visitedNodes.add(rootCell);
 
-            Set<BlokusPlacement> explorationResult = exploreFurtherPlacements(placementHoldings, foundPlacements, visitedNodes, new HashSet<>());
-
-            if (explorationResult.size() == 0) {
-                unusablePlacementRoots.add(rootCell);
-            } else {
-                foundPlacements.addAll(explorationResult);
-            }
+            exploreFurtherPlacements(placementHoldings, visitedNodes);
         });
+        this.placementRootCells = new HashSet<>();
 
-        // update root cells
-        unusablePlacementRoots.forEach(this.placementRootCells::remove);
-
-        this.placementSetCache = foundPlacements;
-        return foundPlacements;
+        return new HashSet<>(this.placementSetCache);
     }
 
     /**
