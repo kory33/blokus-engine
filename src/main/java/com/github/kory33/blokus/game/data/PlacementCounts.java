@@ -23,7 +23,7 @@ public class PlacementCounts {
         this.placementCounts = new HashMap<>(placementCounts.placementCounts);
     }
 
-    public void addPlacementCount(BlokusPlacement placement) {
+    /*package-private*/ void addPlacementCount(BlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
         int currentPlacementCount = this.placementCounts.get(placementColor);
         this.placementCounts.put(placementColor, currentPlacementCount + placement.size());
@@ -44,5 +44,9 @@ public class PlacementCounts {
         }
 
         return BlokusConstant.FIRST_PLAYER.getOpponentColor();
+    }
+
+    public Map<PlayerColor, Integer> toMap() {
+        return this.placementCounts;
     }
 }
