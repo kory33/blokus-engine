@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /*package-private*/ class BlokusBoardMesh {
     private final BlokusMeshMatrix meshMatrix;
@@ -18,28 +19,33 @@ import java.util.Set;
     // for optimization:
     private boolean hasExploredBefore = false;
 
-    private Set<BlokusMeshNode> placementRootCells = new HashSet<>();
-    private Set<BlokusMeshNode> unavailableNodes = new HashSet<>();
-    private HashMap<IntegerVector, HashSet<BlokusPlacement>> placementsContainingCoordinateMap = new HashMap<>();
-    private Set<BlokusPlacement> placementSetCache = new HashSet<>();
+    private Set<BlokusMeshNode> placementRootCells;
+    private Set<BlokusMeshNode> unavailableNodes;
+    private HashMap<IntegerVector, HashSet<BlokusPlacement>> placementsContainingCoordinateMap;
+    private Set<BlokusPlacement> placementSetCache;
 
     /*package-private*/ BlokusBoardMesh(@NotNull PlayerColor playerColor) {
+        this.placementRootCells = new HashSet<>();
+        this.unavailableNodes = new HashSet<>();
+        this.placementsContainingCoordinateMap = new HashMap<>();
+        this.placementSetCache = new HashSet<>();
+
         this.playerColor = playerColor;
 
         final Integer meshSize = BlokusConstant.BOARD_SIZE;
 
         // prepare disconnected grid nodes
-        this.meshMatrix = new BlokusMeshMatrix(meshSize);
+        this.meshMatrix = new BlokusMeshMatrix();
 
         // add connections
-        for (int column = 1; column <= BlokusConstant.BOARD_SIZE; column++) {
-            for (int row = 1; row <= BlokusConstant.BOARD_SIZE; row++) {
+        for (int column = 1; column <= meshSize; column++) {
+            for (int row = 1; row <= meshSize; row++) {
                 IntegerVector targetVector = new IntegerVector(column, row);
                 BlokusMeshNode targetCell = this.meshMatrix.getNodeAt(targetVector);
                 assert targetCell != null;
 
                 // add undirected arrow toward the color on the right
-                if (column != BlokusConstant.BOARD_SIZE) {
+                if (column != meshSize) {
                     BlokusMeshNode rightMeshCell = this.meshMatrix.getNodeAt(column + 1, row);
 
                     assert rightMeshCell != null;
@@ -47,7 +53,7 @@ import java.util.Set;
                 }
 
                 // add undirected arrow toward the color to the bottom
-                if (row != BlokusConstant.BOARD_SIZE) {
+                if (row != meshSize) {
                     BlokusMeshNode bottomCell = this.meshMatrix.getNodeAt(column, row + 1);
 
                     assert bottomCell != null;
@@ -68,6 +74,37 @@ import java.util.Set;
                 initialPlacementRoot = BlokusConstant.BLUE_BEGIN_COORDINATE;
         }
         placementRootCells.add(meshMatrix.getNodeAt(initialPlacementRoot));
+    }
+
+    private BlokusBoardMesh(BlokusBoardMesh blokusBoardMesh) {
+        this.placementRootCells = new HashSet<>(blokusBoardMesh.placementRootCells);
+        this.unavailableNodes = new HashSet<>(blokusBoardMesh.unavailableNodes);
+        this.placementSetCache = new HashSet<>(blokusBoardMesh.placementSetCache);
+
+        this.placementsContainingCoordinateMap = new HashMap<>();
+        blokusBoardMesh.placementsContainingCoordinateMap.forEach((vector, placementsOnVector) ->
+                this.placementsContainingCoordinateMap.put(vector, new HashSet<>(placementsOnVector))
+        );
+
+        this.playerColor = blokusBoardMesh.playerColor;
+
+        BlokusMeshMatrix oldMeshMatrix = blokusBoardMesh.meshMatrix;
+        this.meshMatrix = new BlokusMeshMatrix();
+        this.meshMatrix.getVectorSpace().forEach(vector -> {
+            BlokusMeshNode newNode = meshMatrix.getNodeAt(vector);
+            BlokusMeshNode correspondingOldNode = oldMeshMatrix.getNodeAt(vector);
+
+            assert newNode != null;
+            assert correspondingOldNode != null;
+
+            Set<BlokusMeshNode> nodesConnectedToNewNode =
+                    correspondingOldNode.getConnectedNodes().stream()
+                        .map(oldMeshMatrix::getCoordinateOf)
+                        .map(meshMatrix::getNodeAt)
+                        .collect(Collectors.toSet());
+
+            nodesConnectedToNewNode.forEach(newNode::addEdgeTo);
+        });
     }
 
     private void markPlacementAsUnavailable(BlokusPlacement placement) {
@@ -252,5 +289,9 @@ import java.util.Set;
             resultString.append("\n").append(edgeRowStringBuilder.toString()).append("\n");
         }
         return resultString.toString();
+    }
+
+    public BlokusBoardMesh getCopy() {
+        return new BlokusBoardMesh(this);
     }
 }

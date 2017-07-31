@@ -27,9 +27,8 @@ public class BlokusGame {
         this.gameData = game.getGameData();
         this.currentGamePhase = game.getPhase();
 
-        // TODO deep clone board meshes
-        this.redPlacementMesh = game.redPlacementMesh;
-        this.bluePlacementMesh = game.bluePlacementMesh;
+        this.redPlacementMesh = game.redPlacementMesh.getCopy();
+        this.bluePlacementMesh = game.bluePlacementMesh.getCopy();
     }
 
     public void makePlacement(BlokusPlacement placement) {

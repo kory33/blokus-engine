@@ -29,13 +29,18 @@ import java.util.stream.Collectors;
     @NotNull
     private final BijectiveHashMap<IntegerVector, BlokusMeshNode> meshCoordinateMap = new BijectiveHashMap<>();
 
-    /*package-private*/ BlokusMeshMatrix(@NotNull Integer matrixSize) {
+    /*package-private*/ BlokusMeshMatrix() {
+        Integer matrixSize = BlokusConstant.BOARD_SIZE;
         for (int column = 1; column <= matrixSize; column++) {
             for (int row = 1; row <= matrixSize; row++) {
                 IntegerVector coordinate = new IntegerVector(column, row);
                 this.meshCoordinateMap.put(coordinate, new BlokusMeshNode());
             }
         }
+    }
+
+    Set<IntegerVector> getVectorSpace() {
+        return this.meshCoordinateMap.getAsMap().keySet();
     }
 
     @Nullable
