@@ -5,11 +5,9 @@ import com.github.kory33.blokus.game.data.BlokusGameData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Set;
 
-/**
- * A class representing a Blokus game session.
- */
 public class BlokusGame {
     @NotNull private final BlokusGameData gameData;
     @NotNull private BlokusGamePhases currentGamePhase;
@@ -17,51 +15,24 @@ public class BlokusGame {
     private final BlokusBoardMesh redPlacementMesh;
     private final BlokusBoardMesh bluePlacementMesh;
 
-    private final IBlokusPlayer redPlayer;
-    private final IBlokusPlayer bluePlayer;
-
-    public BlokusGame(IBlokusPlayer red, IBlokusPlayer blue) {
+    public BlokusGame() {
         this.gameData = new BlokusGameData();
 
         this.redPlacementMesh = new BlokusBoardMesh(PlayerColor.RED);
         this.bluePlacementMesh = new BlokusBoardMesh(PlayerColor.BLUE);
-        this.redPlayer = red;
-        this.bluePlayer = blue;
-
         this.currentGamePhase = BlokusGamePhases.getResumeStatus(BlokusConstant.FIRST_PLAYER);
-        this.redPlayer.assignColor(PlayerColor.RED);
-        this.bluePlayer.assignColor(PlayerColor.BLUE);
     }
 
-    /**
-     * Let next player choose a placement and play the chosen placement.
-     * Upon calling this method, <code>BlokusGamePhases</code> member is updated,
-     * hence a change in return value of {@link #getNextPlayerColor()}.
-     * <p>
-     * When the game has been already terminated, this method does not do anything.
-     * </p>
-     */
-    public void playSinglePlacement() {
-        if (this.currentGamePhase.isGameFinished()) {
-            return;
-        }
+    private BlokusGame(BlokusGame game) {
+        this.gameData = game.getGameData();
+        this.currentGamePhase = game.getPhase();
 
-        IBlokusPlayer nextPlayer;
-        BlokusBoardMesh playerBoardMesh;
-        if (this.currentGamePhase == BlokusGamePhases.RESUME_RED_PLAYER) {
-            nextPlayer = this.redPlayer;
-            playerBoardMesh = this.redPlacementMesh;
-        } else {
-            nextPlayer = this.bluePlayer;
-            playerBoardMesh = this.bluePlacementMesh;
-        }
-
-        Set<BlokusPlacement> possiblePlacements = playerBoardMesh.getPossiblePlacements(this.gameData);
-        BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.getGameData());
-        this.makePlacement(playerPlacement);
+        // TODO deep clone board meshes
+        this.redPlacementMesh = game.redPlacementMesh;
+        this.bluePlacementMesh = game.bluePlacementMesh;
     }
 
-    private void makePlacement(BlokusPlacement placement) {
+    public void makePlacement(BlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
         if (this.currentGamePhase.getNextPlayerColor() != placementColor) {
             throw new IllegalArgumentException("Illegally-colored placement given!");
@@ -95,9 +66,24 @@ public class BlokusGame {
         this.currentGamePhase = BlokusGamePhases.getResumeStatus(placementColor.getOpponentColor());
     }
 
-    @Nullable
-    public PlayerColor getNextPlayerColor() {
-        return currentGamePhase.getNextPlayerColor();
+    public Set<BlokusPlacement> getPossiblePlacements() {
+        if (this.isGameFinished()) {
+            return new HashSet<>();
+        }
+
+        BlokusBoardMesh playerBoardMesh;
+        if (this.currentGamePhase == BlokusGamePhases.RESUME_RED_PLAYER) {
+            playerBoardMesh = this.redPlacementMesh;
+        } else {
+            playerBoardMesh = this.bluePlacementMesh;
+        }
+
+        return playerBoardMesh.getPossiblePlacements(this.gameData);
+    }
+
+    @NotNull
+    public BlokusGamePhases getPhase() {
+        return this.currentGamePhase;
     }
 
     public boolean isGameFinished() {
@@ -115,5 +101,9 @@ public class BlokusGame {
             return null;
         }
         return this.gameData.getPlacementCounts().getWinningColor();
+    }
+
+    public BlokusGame getCopy() {
+        return new BlokusGame(this);
     }
 }
