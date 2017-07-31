@@ -32,37 +32,22 @@ import java.util.stream.Collectors;
 
         this.playerColor = playerColor;
 
-        final Integer meshSize = BlokusConstant.BOARD_SIZE;
-
         // prepare disconnected grid nodes
         this.meshMatrix = new BlokusMeshMatrix();
 
         // add connections
-        for (int column = 1; column <= meshSize; column++) {
-            for (int row = 1; row <= meshSize; row++) {
-                IntegerVector targetVector = new IntegerVector(column, row);
-                BlokusMeshNode targetCell = this.meshMatrix.getNodeAt(targetVector);
-                assert targetCell != null;
+        this.meshMatrix.getVectorSpace().forEach(vector -> {
+            BlokusMeshNode targetCell = this.meshMatrix.getNodeAt(vector);
+            assert targetCell != null;
 
-                // add undirected arrow toward the color on the right
-                if (column != meshSize) {
-                    BlokusMeshNode rightMeshCell = this.meshMatrix.getNodeAt(column + 1, row);
+            BlokusMeshNode rightMeshCell = this.meshMatrix.getNodeAt(vector.getX() + 1, vector.getY());
+            BlokusMeshNode bottomCell = this.meshMatrix.getNodeAt(vector.getX(), vector.getY() + 1);
 
-                    assert rightMeshCell != null;
-                    targetCell.addEdgeTo(rightMeshCell);
-                }
+            if (rightMeshCell != null) targetCell.addEdgeTo(rightMeshCell);
+            if (bottomCell != null) targetCell.addEdgeTo(bottomCell);
 
-                // add undirected arrow toward the color to the bottom
-                if (row != meshSize) {
-                    BlokusMeshNode bottomCell = this.meshMatrix.getNodeAt(column, row + 1);
-
-                    assert bottomCell != null;
-                    targetCell.addEdgeTo(bottomCell);
-                }
-
-                this.placementsContainingCoordinateMap.put(targetVector, new HashSet<>());
-            }
-        }
+            this.placementsContainingCoordinateMap.put(vector, new HashSet<>());
+        });
 
         // define initial placement root
         IntegerVector initialPlacementRoot = null;
