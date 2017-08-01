@@ -4,7 +4,7 @@ import com.github.kory33.blokus.game.data.PlacementHoldings;
 import com.github.kory33.blokus.util.IntegerVector;
 import com.github.kory33.blokus.util.SetUtil;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class BlokusPlacementSpace {
      * i.e. it should be ensured that the ColoredBlokusPlacement at index n in range of [1, N]
      * always points to the same placement.
      */
-    public static final ArrayList<BlokusPlacement> PLACEMENT_LIST;
+    public static final List<BlokusPlacement> PLACEMENT_LIST;
     static {
         // prepare disconnected grid nodes
         BlokusMeshMatrix meshMatrix = new BlokusMeshMatrix();
@@ -87,6 +87,6 @@ public class BlokusPlacementSpace {
                         .stream()
                         .sorted(BlokusPlacement::compareTo)
                         .collect(Collectors.toList());
-        PLACEMENT_LIST = new ArrayList<>(orderedPossiblePlacements);
+        PLACEMENT_LIST = Collections.unmodifiableList(orderedPossiblePlacements);
     }
 }
