@@ -83,6 +83,9 @@ public class BlokusPlacement implements Comparable<BlokusPlacement> {
             return Integer.compare(thisVectorIdSet.size(), thatVectorIdSet.size());
         }
 
+        // Compare the sorted vector id list.
+        // Return the compare value of the first pair of elements
+        // whose indices are equal but values are different.
         List<Integer> thisVectorIdList = thisVectorIdSet.stream().sorted().collect(Collectors.toList());
         List<Integer> thatVectorIdList = thatVectorIdSet.stream().sorted().collect(Collectors.toList());
         for (int index = 0; index < thisVectorIdList.size(); index++) {
