@@ -1,7 +1,7 @@
 package com.github.kory33.blokus.game.data;
 
 import com.github.kory33.blokus.game.BlokusConstant;
-import com.github.kory33.blokus.game.BlokusPlacement;
+import com.github.kory33.blokus.game.ColoredBlokusPlacement;
 import com.github.kory33.blokus.game.color.PlayerColor;
 
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class PlacementCounts {
         this.placementCounts = new HashMap<>(placementCounts.placementCounts);
     }
 
-    /*package-private*/ void addPlacementCount(BlokusPlacement placement) {
+    /*package-private*/ void addPlacementCount(ColoredBlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
         int currentPlacementCount = this.placementCounts.get(placementColor);
         this.placementCounts.put(placementColor, currentPlacementCount + placement.size());

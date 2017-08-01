@@ -31,7 +31,7 @@ public class BlokusGame {
         this.bluePlacementMesh = game.bluePlacementMesh.getCopy();
     }
 
-    public void makePlacement(BlokusPlacement placement) {
+    public void makePlacement(ColoredBlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
         if (this.currentGamePhase.getNextPlayerColor() != placementColor) {
             throw new IllegalArgumentException("Illegally-colored placement given!");
@@ -65,7 +65,7 @@ public class BlokusGame {
         this.currentGamePhase = BlokusGamePhases.getResumeStatus(placementColor.getOpponentColor());
     }
 
-    public Set<BlokusPlacement> getPossiblePlacements() {
+    public Set<ColoredBlokusPlacement> getPossiblePlacements() {
         if (this.isGameFinished()) {
             return new HashSet<>();
         }

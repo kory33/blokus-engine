@@ -1,7 +1,7 @@
 package com.github.kory33.blokus.game.data;
 
 import com.github.kory33.blokus.game.BlokusConstant;
-import com.github.kory33.blokus.game.BlokusPlacement;
+import com.github.kory33.blokus.game.ColoredBlokusPlacement;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +17,7 @@ public class PlacementHoldings {
     @NotNull
     private final Map<Integer, Integer> holdings;
 
-    /*package-private*/ PlacementHoldings() {
+    public PlacementHoldings() {
         this.holdings = new HashMap<>(BlokusConstant.PLACEMENT_COUNTS);
     }
 
@@ -51,7 +51,7 @@ public class PlacementHoldings {
      * Update the placement holdings record assuming that the given placement has been made.
      * @param placement Placement which has been made.
      */
-    /*package-private*/ void makePlacement(BlokusPlacement placement) {
+    /*package-private*/ void makePlacement(ColoredBlokusPlacement placement) {
         int placementSize = placement.size();
         int placementHoldings = holdings.get(placementSize) - 1;
         if (placementHoldings == 0) {

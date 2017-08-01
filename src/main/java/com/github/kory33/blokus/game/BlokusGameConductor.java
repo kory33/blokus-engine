@@ -36,8 +36,8 @@ public class BlokusGameConductor {
             nextPlayer = this.bluePlayer;
         }
 
-        Set<BlokusPlacement> possiblePlacements = this.gameInstance.getPossiblePlacements();
-        BlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.gameInstance.getGameData());
+        Set<ColoredBlokusPlacement> possiblePlacements = this.gameInstance.getPossiblePlacements();
+        ColoredBlokusPlacement playerPlacement = nextPlayer.chooseBestPlacementFrom(possiblePlacements, this.gameInstance.getGameData());
         this.gameInstance.makePlacement(playerPlacement);
     }
 

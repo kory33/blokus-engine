@@ -1,6 +1,5 @@
 package com.github.kory33.blokus.game;
 
-import com.github.kory33.blokus.game.color.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;
 import com.github.kory33.blokus.util.SetUtil;
 import org.jetbrains.annotations.NotNull;
@@ -12,30 +11,25 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * This class represents a placement made by one of the players.
+ * Represents abstracted placement on a blokus game.
+ *
+ * This placement representation does not include its color.
+ * To ensure the color presence, use {@link ColoredBlokusPlacement}
  */
 public class BlokusPlacement {
-    @NotNull private final PlayerColor placementColor;
     @NotNull private final Set<IntegerVector> placementCellCoordinates;
 
     /**
-     * HashCode is cached under the assumption that a BlokusPlacement object is immutable.
+     * HashCode is cached under the assumption that a ColoredBlokusPlacement object is immutable.
      */
     private int hashCodeCache;
 
-    /*package-private*/ BlokusPlacement(@NotNull Set<IntegerVector> placementSet, @NotNull PlayerColor placementColor) {
-        this.placementColor = placementColor;
+    public BlokusPlacement(@NotNull Set<IntegerVector> placementSet) {
         this.placementCellCoordinates = placementSet;
-        this.hashCodeCache = Objects.hash(placementCellCoordinates);
     }
 
     public Set<IntegerVector> getCellCoordinates() {
         return new HashSet<>(placementCellCoordinates);
-    }
-
-    @NotNull
-    public PlayerColor getPlacementColor() {
-        return placementColor;
     }
 
     public void forEach(Consumer<? super IntegerVector> action) {
@@ -67,11 +61,4 @@ public class BlokusPlacement {
         return this.hashCodeCache;
     }
 
-    @Override
-    public String toString() {
-        return "BlokusPlacement{" +
-                "placementColor=" + placementColor +
-                ", placementCellCoordinates=" + placementCellCoordinates +
-                '}';
-    }
 }

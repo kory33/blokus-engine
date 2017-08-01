@@ -1,7 +1,7 @@
 package com.github.kory33.blokus.game.data;
 
 import com.github.kory33.blokus.game.BlokusConstant;
-import com.github.kory33.blokus.game.BlokusPlacement;
+import com.github.kory33.blokus.game.ColoredBlokusPlacement;
 import com.github.kory33.blokus.game.color.PlayerColor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class BlokusGameData {
         return this.bluePlacementHoldings;
     }
 
-    public void updateGameData(BlokusPlacement placement) {
+    public void updateGameData(ColoredBlokusPlacement placement) {
         this.board.updateBoard(placement);
         this.getInstanceOfPlacementHoldingsOf(placement.getPlacementColor()).makePlacement(placement);
         this.placementHistory.add(placement);

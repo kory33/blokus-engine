@@ -1,6 +1,6 @@
 package com.github.kory33.blokus.game.data;
 
-import com.github.kory33.blokus.game.BlokusPlacement;
+import com.github.kory33.blokus.game.ColoredBlokusPlacement;
 import com.github.kory33.blokus.game.color.CellColor;
 import com.github.kory33.blokus.game.color.PlayerColor;
 import com.github.kory33.blokus.util.IntegerVector;
@@ -32,7 +32,7 @@ public class BlokusBoard {
         this.boardMatrix = new HashMap<>(board.boardMatrix);
     }
 
-    /*package-private*/ void updateBoard(BlokusPlacement placement) {
+    /*package-private*/ void updateBoard(ColoredBlokusPlacement placement) {
         PlayerColor placementColor = placement.getPlacementColor();
         placement.forEach(placementCoordinate -> {
             this.boardMatrix.put(placementCoordinate, CellColor.fromPlayerColor(placementColor));

@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public interface IBlokusPlayer {
     @NotNull
-    BlokusPlacement chooseBestPlacementFrom(@NotNull Set<BlokusPlacement> placementSet, @NotNull BlokusGameData gameData);
+    ColoredBlokusPlacement chooseBestPlacementFrom(@NotNull Set<ColoredBlokusPlacement> placementSet, @NotNull BlokusGameData gameData);
 
     void assignColor(@NotNull PlayerColor color);
 }
