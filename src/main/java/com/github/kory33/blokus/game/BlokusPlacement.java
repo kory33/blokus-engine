@@ -5,10 +5,12 @@ import com.github.kory33.blokus.util.SetUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Represents abstracted placement on a blokus game.
@@ -16,7 +18,7 @@ import java.util.function.Function;
  * This placement representation does not include its color.
  * To ensure the color presence, use {@link ColoredBlokusPlacement}
  */
-public class BlokusPlacement {
+public class BlokusPlacement implements Comparable<BlokusPlacement> {
     @NotNull private final Set<IntegerVector> placementCellCoordinates;
 
     /**
@@ -61,4 +63,36 @@ public class BlokusPlacement {
         return this.hashCodeCache;
     }
 
+    @NotNull
+    private Set<Integer> toVectorIdSet() {
+        return SetUtil.map(
+                this.placementCellCoordinates,
+                vector -> vector.getX() + BlokusConstant.BOARD_SIZE * vector.getY()
+        );
+    }
+
+    @Override
+    public int compareTo(@NotNull BlokusPlacement o) {
+        if (this.equals(o)) {
+            return 0;
+        }
+
+        Set<Integer> thisVectorIdSet = this.toVectorIdSet();
+        Set<Integer> thatVectorIdSet = o.toVectorIdSet();
+        if (thisVectorIdSet.size() != thatVectorIdSet.size()) {
+            return Integer.compare(thisVectorIdSet.size(), thatVectorIdSet.size());
+        }
+
+        List<Integer> thisVectorIdList = thisVectorIdSet.stream().sorted().collect(Collectors.toList());
+        List<Integer> thatVectorIdList = thatVectorIdSet.stream().sorted().collect(Collectors.toList());
+        for (int index = 0; index < thisVectorIdList.size(); index++) {
+            int thisVectorIdAtIndex = thisVectorIdList.get(index);
+            int thatVectorIdAtIndex = thatVectorIdList.get(index);
+            if (thisVectorIdAtIndex != thatVectorIdAtIndex) {
+                return Integer.compare(thisVectorIdAtIndex, thatVectorIdAtIndex);
+            }
+        }
+
+        throw new IllegalStateException("Two objects are equal and yet equals() returned false!");
+    }
 }
