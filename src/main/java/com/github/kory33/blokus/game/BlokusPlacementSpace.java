@@ -11,11 +11,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BlokusPlacementSpace {
-    private static Set<BlokusPlacement> exploreFurtherPlacements(Set<BlokusMeshNode> visitedNodes,
+    private static void exploreFurtherPlacements(Set<BlokusMeshNode> visitedNodes,
+                                                                 Set<BlokusPlacement> foundPlacements,
                                                                  BlokusMeshMatrix meshMatrix) {
         PlacementHoldings initialHoldings = new PlacementHoldings();
-
-        Set<BlokusPlacement> explorationResult = new HashSet<>();
         visitedNodes.forEach(visitedNode -> {
             visitedNode.getConnectedNodes().forEach(nextExplorationNode -> {
                 if (visitedNodes.contains(nextExplorationNode)) {
@@ -27,31 +26,35 @@ public class BlokusPlacementSpace {
                 Set<IntegerVector> nextExplorationRootCoords = SetUtil.map(nextExplorationRoot, meshMatrix::getCoordinateOf);
                 BlokusPlacement constructedPlacement = new BlokusPlacement(nextExplorationRootCoords);
 
+                if (foundPlacements.contains(constructedPlacement)) {
+                    return;
+                }
+
                 if (constructedPlacement.size() == initialHoldings.getMaximumPlacementSize()) {
-                    explorationResult.add(constructedPlacement);
+                    foundPlacements.add(constructedPlacement);
                     return;
                 }
 
                 if (initialHoldings.isAvailable(constructedPlacement.size())) {
-                    explorationResult.add(constructedPlacement);
+                    foundPlacements.add(constructedPlacement);
                 }
 
-                explorationResult.addAll(exploreFurtherPlacements(nextExplorationRoot, meshMatrix));
+                exploreFurtherPlacements(nextExplorationRoot, foundPlacements, meshMatrix);
             });
         });
-        return explorationResult;
     }
 
     private static Set<BlokusPlacement> getAllPossiblePlacements(BlokusMeshMatrix meshMatrix) {
         Set<BlokusPlacement> placementSet = new HashSet<>();
 
-        meshMatrix.getVectorSpace().parallelStream()
+        meshMatrix.getVectorSpace().stream()
                 .map(meshMatrix::getNodeAt)
-                .forEach(node -> {
-                    Set<BlokusMeshNode> visitedNodes = new HashSet<>();
-                    visitedNodes.add(node);
-                    placementSet.addAll(exploreFurtherPlacements(visitedNodes, meshMatrix));
-                });
+                .map(node -> {
+                    Set<BlokusMeshNode> nodeSet = new HashSet<>();
+                    nodeSet.add(node);
+                    return nodeSet;
+                })
+                .forEach(nodeSet -> exploreFurtherPlacements(nodeSet, placementSet, meshMatrix));
 
         return placementSet;
     }
