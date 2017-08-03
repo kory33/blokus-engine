@@ -1,6 +1,8 @@
 package com.github.kory33.blokus.game;
 
 import com.github.kory33.blokus.game.data.PlacementHoldings;
+import com.github.kory33.blokus.util.BijectiveHashMap;
+import com.github.kory33.blokus.util.IImmutableBijectiveHashMap;
 import com.github.kory33.blokus.util.IntegerVector;
 import com.github.kory33.blokus.util.SetUtil;
 
@@ -88,5 +90,14 @@ public class BlokusPlacementSpace {
                         .sorted(BlokusPlacement::compareTo)
                         .collect(Collectors.toList());
         PLACEMENT_LIST = Collections.unmodifiableList(orderedPossiblePlacements);
+    }
+
+    public static final IImmutableBijectiveHashMap<Integer, BlokusPlacement> PLACEMENT_INDEX_MAP;
+    static {
+        BijectiveHashMap<Integer, BlokusPlacement> placementMap = new BijectiveHashMap<>();
+        for (int i = 0; i < PLACEMENT_LIST.size(); i++) {
+            placementMap.put(i, PLACEMENT_LIST.get(i));
+        }
+        PLACEMENT_INDEX_MAP = placementMap;
     }
 }

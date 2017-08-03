@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BijectiveHashMap<K, V> {
+public class BijectiveHashMap<K, V> implements IImmutableBijectiveHashMap<K, V> {
     private final HashMap<K, V> map;
     private final HashMap<V, K> inverse;
 
@@ -85,6 +85,7 @@ public class BijectiveHashMap<K, V> {
      * Get an inverse of the map.
      * @return inverse map
      */
+    @Override
     @NotNull
     public BijectiveHashMap<V, K> getInverse() {
         return new BijectiveHashMap<>(this.inverse, this.map);
@@ -94,6 +95,7 @@ public class BijectiveHashMap<K, V> {
      * Get raw map
      * @return map
      */
+    @Override
     @NotNull
     public Map<K, V> getAsMap() {
         return new HashMap<>(this.map);
@@ -104,6 +106,7 @@ public class BijectiveHashMap<K, V> {
      * @param key Key of the mapping
      * @return value mapped from the key
      */
+    @Override
     @Nullable
     public V getValue(K key) {
         return this.map.get(key);
@@ -114,6 +117,7 @@ public class BijectiveHashMap<K, V> {
      * @param value Value of the mapping
      * @return key mapped to the value
      */
+    @Override
     @Nullable
     public K getKey(V value) {
         return this.inverse.get(value);
