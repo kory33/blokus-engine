@@ -51,7 +51,7 @@ public class BlokusPlacement implements Comparable<BlokusPlacement> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof BlokusPlacement)) return false;
         BlokusPlacement that = (BlokusPlacement) o;
