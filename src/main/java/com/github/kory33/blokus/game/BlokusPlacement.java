@@ -53,13 +53,13 @@ public class BlokusPlacement implements Comparable<BlokusPlacement> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof BlokusPlacement)) return false;
         BlokusPlacement that = (BlokusPlacement) o;
         return Objects.equals(placementCellCoordinates, that.placementCellCoordinates);
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return this.hashCodeCache;
     }
 
